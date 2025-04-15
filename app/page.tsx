@@ -3,6 +3,7 @@ import LandingPage from "@/components/LandingPage";
 import FeaturePage from "@/components/FeaturePage";
 import PersonasPage from "@/components/PersonasPage";
 import TestimonialsPage from "@/components/TestimonialsPage";
+import Footer from "@/components/Footer";
 
 export default function Home() {
   return (
@@ -10,7 +11,8 @@ export default function Home() {
       <LandingPage />
       <FeaturePage />
       <PersonasPage />
-      <TestimonialsPage />
+      {/* <TestimonialsPage /> */}
+      <Footer />
     </div>
   );
 }

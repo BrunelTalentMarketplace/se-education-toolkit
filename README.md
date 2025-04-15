@@ -1,36 +1,168 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Software Requirements Engineering Learning Platform
+
+A Next.js-based educational platform designed to help users practice requirements engineering skills through interactive labs. The platform features guided exercises on user stories, use cases, and other requirements engineering concepts.
+
+## Project Overview
+
+This platform provides:
+
+- Interactive labs with structured learning paths
+- Different difficulty levels (easy, medium, hard)
+- Role-based exercises (teacher, student, professional)
+- Points-based feedback system
+- Hint systems with progressive assistance
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+
+- npm or yarn
+
+### Installation
+
+1. Clone the repository
+
+```bash
+git clone https://github.com/yourusername/sse-site.git
+cd sse-site
+```
+
+2. Install dependencies
+
+```bash
+npm install
+# or
+yarn install
+```
+
+3. Start the development server
 
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4. Open [http://localhost:3000](http://localhost:3000) in your browser
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+/
+├── app/             # Next.js application routes and components
+├── components/      # Reusable UI components
+├── data/            # Lab content and configuration
+│   └── index.ts     # Main data structure for labs
+├── public/          # Static assets
+└── styles/          # CSS and styling
+```
 
-## Learn More
+## Creating a New Lab
 
-To learn more about Next.js, take a look at the following resources:
+Labs are defined in `data/index.ts` following a structured format:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Create a new lab array with steps:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```typescript
+const my_new_lab = [
+  {
+    title: "Part 1: Setup",
+    time: 5,
+    setup: ["Step 1", "Step 2"],
+    prompt: `Your detailed prompt here...`,
+  },
+  {
+    title: "Part 2: Game Interaction",
+    time: 15,
+    guidelines: ["Guideline 1", "Guideline 2"],
+    details: [
+      {
+        heading: "Section heading",
+        content: "Content details...",
+      },
+    ],
+    prompt: `Your detailed prompt here...`,
+  },
+  // Add more steps as needed
+];
+```
 
-## Deploy on Vercel
+2. Create a lab object:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```typescript
+const my_new_lab_object: Lab = {
+  id: "unique-lab-id",
+  title: "Lab Title",
+  description: "Brief description of the lab",
+  steps: my_new_lab,
+};
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+3. Add your lab to the LABS array:
+
+```typescript
+export const LABS: LabCategory[] = [
+  // Existing categories
+  {
+    topic: "your_topic",
+    persona: "your_persona",
+    difficulty: "easy", // or "medium", "hard"
+    labs: [my_new_lab_object],
+  },
+];
+```
+
+## Development Workflow
+
+### Git Best Practices
+
+1. Create a new branch for each feature or fix:
+
+```bash
+git checkout -b feature/your-feature-name
+# or
+git checkout -b fix/issue-you-are-fixing
+```
+
+2. Make your changes and commit with descriptive messages:
+
+```bash
+git add .
+git commit -m "feat: add new user story lab for professionals"
+```
+
+3. Push your branch and create a pull request:
+
+```bash
+git push origin feature/your-feature-name
+```
+
+4. In your GitHub repository, create a pull request with:
+
+   - Clear title describing the change
+   - Description of what was changed and why
+   - Any testing performed
+   - Reference to related issues (if applicable)
+
+5. After review and approval, merge your PR into the main branch
+
+### Code Style
+
+- Follow existing patterns and conventions in the codebase
+- Keep lab content structured and consistent with existing examples
+- Use TypeScript types for all new code
+
+## Deployment
+
+The application can be deployed to Vercel:
+
+```bash
+npm run build
+# or
+vercel
+```
+
+## License
+
+[MIT](LICENSE)

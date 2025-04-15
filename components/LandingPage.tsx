@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { motion } from "motion/react";
+import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 const LandingPage = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -61,7 +61,7 @@ const LandingPage = () => {
         )}
 
         {/* Hero image/illustration */}
-        {isMounted && (
+        {/* {isMounted && (
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -76,7 +76,7 @@ const LandingPage = () => {
               className="rounded-lg shadow-lg"
             />
           </motion.div>
-        )}
+        )} */}
 
         {/* Button area */}
         {isMounted && (
