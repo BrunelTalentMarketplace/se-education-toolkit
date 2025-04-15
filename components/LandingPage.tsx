@@ -3,10 +3,10 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion } from "motion/react";
-
+import { useRouter } from "next/navigation";
 const LandingPage = () => {
   const [isMounted, setIsMounted] = useState(false);
-
+  const router = useRouter();
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -89,7 +89,10 @@ const LandingPage = () => {
             <button className="bg-[#FF9933] text-white px-8 rounded-md text-sm py-2 hover:bg-[#E67300] transition-colors shadow-md">
               Get Started
             </button>
-            <button className="text-[#FF9933] border border-[#FF9933] px-8 rounded-md text-sm py-2 hover:bg-[#FFC380] hover:text-white transition-colors">
+            <button
+              onClick={() => router.push("/about")}
+              className="text-[#FF9933] border border-[#FF9933] px-8 rounded-md text-sm py-2 hover:bg-[#FFC380] hover:text-white transition-colors"
+            >
               Learn More
             </button>
           </motion.div>

@@ -4,12 +4,17 @@ import { NavlinkType, NAVLINKS } from "@/constants";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
+import { useRouter } from "next/navigation";
 
 const Navbar = () => {
+  const router = useRouter();
   return (
     <nav className="flex px-10 py-3 justify-between items-center relative">
       {/* Logo */}
-      <div className="rounded-full w-12 aspect-square">
+      <button
+        onClick={() => router.push("/")}
+        className="rounded-full w-12 aspect-square"
+      >
         <Image
           className="rounded-full"
           src={
@@ -19,7 +24,7 @@ const Navbar = () => {
           width={200}
           height={200}
         />
-      </div>
+      </button>
       <div className="absolute left-1/2 transform -translate-x-1/2 flex gap-12 items-center">
         {NAVLINKS.map((navlink) => (
           <Navlink key={navlink.name} navlink={navlink} />
