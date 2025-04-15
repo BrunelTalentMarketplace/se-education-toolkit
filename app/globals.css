@@ -20,7 +20,7 @@ body {
   min-height: 100vh;
 }
 
-body::before {
+/* body::before {
   content: "";
   position: absolute;
   top: 0;
@@ -39,4 +39,4 @@ body::before {
     );
   filter: blur(40px);
   z-index: -1;
-}
+} */

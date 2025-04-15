@@ -3,6 +3,12 @@ export type NavlinkType = {
   href: string;
 };
 
+export type PersonaType = {
+  name: string;
+  description: string;
+  imageUrl: string;
+};
+
 export const NAVLINKS: NavlinkType[] = [
   {
     name: "Labs",
@@ -62,5 +68,26 @@ export const FEATURES = [
     imageAlt: "Collaboration icon",
     colSpan: 6,
     delay: 0.8,
+  },
+];
+
+export const PERSONAS = [
+  {
+    name: "Teacher",
+    description:
+      "Leverage cutting-edge LLMs to provide personalized feedback and guidance through complex software engineering concepts.",
+    imageUrl: "/stickers/personas/teacher.png",
+  },
+  {
+    name: "Expert",
+    description:
+      "Provides detailed technical feedback on designs with industry-level insights. Ideal for advanced learning and professional growth.",
+    imageUrl: "/stickers/personas/expert.png",
+  },
+  {
+    name: "Peer",
+    description:
+      "Facilitates collaborative problem-solving and design reviews in a friendly, supportive manner. Great for practicing teamwork skills.",
+    imageUrl: "/stickers/personas/peer.png",
   },
 ];

@@ -1,44 +1,101 @@
-import React from "react";
+"use client";
+
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import { motion } from "motion/react";
 
 const LandingPage = () => {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   return (
-    <main className="h-screen flex flex-col items-center relative px-4 md:px-8 lg:px-12">
-      <div className="w-16 aspect-square rounded-md border border-gray-300 p-2 mt-10">
-        <Image
-          className="rounded-full"
-          src={
-            "https://bruneltalentmarketplace.com/static/media/Navbar-icon.9b1893f0b90313489b9f.png"
-          }
-          alt="btm logo"
-          width={200}
-          height={200}
-        />
-      </div>
+    <div className="min-h-screen flex flex-col items-center relative overflow-hidden px-4 pt-16 pb-24">
+      {/* Background elements */}
+      {isMounted && (
+        <>
+          <motion.div
+            className="absolute top-20 -left-20 w-64 h-64 rounded-full bg-orange-100 opacity-20"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.2 }}
+            transition={{ duration: 1.5 }}
+          />
+          <motion.div
+            className="absolute bottom-20 -right-20 w-80 h-80 rounded-full bg-blue-100 opacity-20"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.2 }}
+            transition={{ duration: 1.5, delay: 0.3 }}
+          />
+          <motion.div
+            className="absolute top-40 right-1/4 w-20 h-20 rounded-full bg-green-100 opacity-30"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.3 }}
+            transition={{ duration: 1.5, delay: 0.6 }}
+          />
+        </>
+      )}
+
       {/* Main text area */}
-      <div className="flex flex-col items-center mt-6 w-full max-w-7xl">
-        <h1 className="text-3xl md:text-4xl font-semibold text-gray-900 mb-2 leading-tight text-center">
-          Revolutionize, Transform, Empower
-        </h1>
-        <h2 className="text-2xl md:text-4xl font-bold text-[#FF9933] mb-4 text-center">
-          Toolkit for Next-Gen SE Curriculum Development
-        </h2>
-        <p className="text-sm text-gray-600 px-4 sm:px-12 md:px-20 text-center max-w-3xl line-clamp-3 md:line-clamp-none">
-          AI-driven platform transforming Requirements Engineering and UML
-          education. Features AI-powered labs with real-time feedback for
-          scalable hands-on learning while preserving academic rigor.
-        </p>
+      <div className="flex flex-col items-center w-full max-w-7xl z-10">
+        {isMounted && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-center"
+          >
+            <h1 className="text-3xl md:text-5xl font-semibold text-gray-900 mb-2 leading-tight text-center">
+              Revolutionize, Transform, Empower
+            </h1>
+            <h2 className="text-2xl md:text-4xl font-bold text-[#FF9933] mb-6 text-center">
+              Toolkit for Next-Gen SE Curriculum Development
+            </h2>
+            <p className="text-sm md:text-base text-gray-600 px-4 sm:px-12 md:px-20 text-center max-w-3xl mb-8">
+              AI-driven platform transforming Requirements Engineering and UML
+              education. Features AI-powered labs with real-time feedback for
+              scalable hands-on learning while preserving academic rigor.
+            </p>
+          </motion.div>
+        )}
+
+        {/* Hero image/illustration */}
+        {isMounted && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="w-full max-w-2xl my-8"
+          >
+            <Image
+              src="https://placehold.co/800x450/FCF4EE/FF9933/png?text=SE+Toolkit+Platform&font=montserrat"
+              alt="Platform illustration"
+              width={800}
+              height={450}
+              className="rounded-lg shadow-lg"
+            />
+          </motion.div>
+        )}
+
         {/* Button area */}
-        <div className="flex flex-col sm:flex-row gap-4 mt-6">
-          <button className="bg-[#FF9933] text-white px-8 rounded-md text-sm py-2 hover:bg-[#E67300] transition-colors">
-            Get Started
-          </button>
-          <button className="text-[#FF9933] border border-[#FF9933] px-8 rounded-md text-sm py-2 hover:bg-[#FFC380] hover:text-white transition-colors">
-            Learn More
-          </button>
-        </div>
+        {isMounted && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="flex flex-col sm:flex-row gap-4 mt-6"
+          >
+            <button className="bg-[#FF9933] text-white px-8 rounded-md text-sm py-2 hover:bg-[#E67300] transition-colors shadow-md">
+              Get Started
+            </button>
+            <button className="text-[#FF9933] border border-[#FF9933] px-8 rounded-md text-sm py-2 hover:bg-[#FFC380] hover:text-white transition-colors">
+              Learn More
+            </button>
+          </motion.div>
+        )}
       </div>
-    </main>
+    </div>
   );
 };
 
