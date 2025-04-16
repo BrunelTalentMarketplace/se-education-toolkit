@@ -86,7 +86,10 @@ const LandingPage = () => {
             transition={{ duration: 0.8, delay: 0.4 }}
             className="flex flex-col sm:flex-row gap-4 mt-6"
           >
-            <button className="bg-[#FF9933] text-white px-8 rounded-md text-sm py-2 hover:bg-[#E67300] transition-colors shadow-md">
+            <button
+              onClick={() => router.push("/labs")}
+              className="bg-[#FF9933] text-white px-8 rounded-md text-sm py-2 hover:bg-[#E67300] transition-colors shadow-md"
+            >
               Get Started
             </button>
             <button

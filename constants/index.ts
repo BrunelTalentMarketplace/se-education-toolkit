@@ -15,14 +15,6 @@ export const NAVLINKS: NavlinkType[] = [
     href: "/labs",
   },
   {
-    name: "N/A",
-    href: "/labs",
-  },
-  {
-    name: "Resouces",
-    href: "/labs",
-  },
-  {
     name: "About",
     href: "/about",
   },

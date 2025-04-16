@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html><head>
+  <style>
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 1rem;
+            border-radius: 2px;
+            margin-bottom: 1rem;
+        }
+        .section {
+            background: #fff;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #3498db;
+            border-radius: 0 8px 8px 0;
+        }
+        .code-block {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 6px;
+            font-family: monospace;
+            border: 1px solid #dee2e6;
+            white-space: pre-wrap;
+            margin: 1rem 0;
+        }
+        .timer {
+            display: inline-block;
+            background: #e74c3c;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+         h1, h2, h3 {
+            color: #2c3e50;
+        }
+        ul {
+            padding-left: 1.5rem;
+        }
+        li {
+            margin-bottom: 0.5rem;
+        }
+        .prompt-container {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+        .prompt-section {
+            margin: 15px 0;
+        }
+        .prompt-list {
+            margin: 10px 0 10px 20px;
+        }
+        .copy-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+        .copy-button:hover {
+            background: #0056b3;
+        }
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            margin: 0;
+            font-family: inherit;
+        }
+    </style>
+</head><body><div class="container">
+<div class="header">
+<h1 class="header">User Story Detective Game</h1>
+<h2 class="header">LLM-assisted Requirements Engineering Exercise</h2>
+</div>
+<div class="section">
+<h2>Part 1: Setup <span class="timer">5 minutes</span></h2>
+<ol>
+<li>Open your preferred LLM assistant</li>
+<li>Copy and paste the following prompt:</li>
+</ol>
+<div class="prompt-container"><button class="copy-button" id="button1" onclick="copyText('button1')">Copy Prompt</button>
+<pre class="prompt-content" id="prompt1">         I want you to act as a Requirements Engineering teacher who will help me practice writing functional requirements. You will help me create an Agile user story based on a problem statement, proposed solution and personas.  A user story is an informal, general explanation of a software feature written from the perspective of the end user. Its purpose is to articulate how a software feature will provide value to the customer.  The user story we will work on will represent a functional requirement that specifies what the product, system, or service should do or provide. 
+User stories are often expressed in a simple sentence, structured as follows:
+“As a [persona], I [want to], [so that].”
+The user stories should have:
+1.	The user story statement: “As a [persona], I [want to], [so that].”
+2.	Its acceptance criteria, which may be incomplete.
+The acceptance criteria follow the "Given-When-Then", defining the context ("Given"), the action/event ("When"), and the expected outcome ("Then") for a user story or feature. 
+A user story should satisfy INVEST. This stands for:
+•	Independent: The user story should be independent of all others. Because they are not connected, they can be worked on in any order.
+•	Negotiable: A user story should be flexible enough to encourage and allow for negotiation between the customer and product owner.
+•	Valuable: What value does the user story bring? If you cannot find any value or desired functionality, the story should not be completed.
+•	Estimable: You should be able to make an estimation of how long a user story will take so that you can effectively manage your time.
+•	Small: The story must be small enough to be completed within a single sprint.
+•	Testable: You must be able to test your user story in line with quality assurance standards and obtain confirmation through acceptance testing (e.g., beta testing).
+Points System:
+- Suggesting a new user story that is missing: +10 points
+- Finding an issue in the user story without hints: +5 points
+- Fixing an issue with an existing user story: +5 points
+- Suggesting acceptance criteria: +5 points
+- Fixing acceptance criteria: +5 points
+- Creative solutions that enhance a user story: +5 points
+Hint System:
+I can request hints at three levels:
+- Level 1: Reminder of criteria for good user stories or the format of user stories and acceptance criteria (-0 points)
+- Level 2: Hints about what's wrong in the user story or its acceptance criteria (-5 points)
+- Level 3: Exact issue and how to fix it (-10 points)
+For each step, check the following but do not show fixes for identified issues:
+1. Is the user story clear and specific?
+2. Is it at the right detail level? Does the statement represent a single user story or an epic that combines multiple user stories?
+3. Are Acceptance Criteria specified?
+4. Is the requirement consistent with the overall objective specified for the system/product?
+5. Is the requirement necessary, or does it represent an add-on feature that may not be essentially implemented?
+6. Is testing possible once the requirement is implemented?
+7. Is the requirement feasible in the technical environment where the product or system will be used?
+After EVERY interaction, you must show:
+1. The current USER STORY with its current acceptance criteria.
+2. STATUS (Score, Current Step, Issues Found, Issues Fixed, Steps Left)
+3. SUGGESTED NEXT ACTIONS to revise the user story and add or revise acceptance criteria
+Start by welcoming me to the User Story Wizard Game! Ask to enter a problem statement, proposed solution, personas and at least one user story with its acceptance criteria.
+</pre>
+</div>
+</div>
+<div class="section">
+<h2>Part 2: Game Interaction <span class="timer">15 minutes</span></h2>
+<p>Provide this information for analysis:</p>
+<div class="prompt-container"><button class="copy-button" id="button2" onclick="copyText('button2')">Copy Prompt</button>
+<pre class="prompt-content" id="prompt2">  We will work on a problem based on UN SDG #2 (Zero Hunger). 
+Problem statement:
+“People in food poverty need access to fresh food in a way that preserves their dignity and avoids excessive bureaucracy.”
+Our primary users are those in food poverty but want to access healthy food without putting their dignity at stake. They require less cumbersome ways to get healthy produce. 
+As a solution, we want to develop an app that helps people locate fresh produce in their area more easily. In our solution, allotment owners can advertise their excess produce and when and how it can be picked up.  Registered users can browse and check out the produce they like. 
+We have two personas. 
+Sarah is a young mother of two who has recently lost her job. She believes buying frozen or fast food is not a matter of ignorance but of being unable to afford “healthy food”. She doesn’t want to use a food bank because she doesn’t want to be seen asking for help.  We will call her our Allotment User.
+Benjamin has owned an allotment for years, and he has been overproducing. He wants to transform part of his allotment to provide those on benefits, pensioners on state pension and those on a low-income free organic fruit and vegetables. But he doesn’t know how to reach those people. We will call him the Allotment Owner.
+Here is a user story for Allotment User:
+As an allotment user, I want to create an app account so that I can save my preferences. 
+Acceptance criteria:
+Given that the user is on the register page, when the user enters email, password, types of fresh food, and locations to pick up the food from, the user should be registered and directed to the login page. 
+Given that the user entered a password that doesn’t meet password requirements, when the registration button is clicked, the error message “invalid password” is displayed.
+Given that the user entered an invalid email, when the registration button is clicked, the error message “invalid email” is displayed. 
+</pre>
+</div>
+<h3>Guidelines:</h3>
+<ul>
+<li>Analyze each step carefully</li>
+<li>Try finding issues before requesting hints</li>
+<li>Progress through hint levels only when needed</li>
+<li>Track your score</li>
+<li>Document learned principles</li>
+</ul>
+</div>
+<div class="section">
+<h2>Part 3: Documentation <span class="timer">5 minutes</span></h2>
+<ol>
+<li>Export your conversation (<span data-olk-copy-source="MessageBody">or simply copy paste your interactions in a text document)</span>&nbsp;</li>
+<li>Save as PDF/text</li>
+<li>Submit your LLM thread and complete the survey here: <a href="https://forms.office.com/e/mj8TBcYJ4A" target="_blank" rel="noopener">Post-survey form</a></li>
+<li>Thank you! You are awesome!</li>
+</ol>
+</div>
+</div>
+<p><script>
+    function copyText(id) {
+        var text;
+        if(id === 'button1'){
+          text =  document.querySelector('#prompt1').innerText;
+        } else {
+          text = document.querySelector('#prompt2').innerText;
+        }
+        navigator.clipboard.writeText(text).then(() => {
+            const button = document.querySelector(`#${id}`);
+            button.textContent = 'Copied!';
+            setTimeout(() => {
+                button.textContent = 'Copy Prompt';
+            }, 2000);
+        });
+    }
+    </script></p></body></html>

@@ -3,35 +3,66 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import Image from "next/image";
-import { Copy, ChevronDown, Search, Clock, Filter } from "lucide-react";
+import {
+  Copy,
+  ChevronDown,
+  Search,
+  Clock,
+  Filter,
+  Download,
+} from "lucide-react";
 
 import LabStep from "@/components/labs/LabStep";
-import { filterLabs, getDifficulties } from "@/lib/lab-utils";
+import { filterLabs } from "@/lib/lab-utils";
 import { getPersonas } from "@/lib/lab-utils";
 import SelectFilter from "@/components/labs/SelectFilter";
-import { getTopics } from "@/lib/lab-utils";
-import { Lab } from "@/data";
+import { getTopics, getAreas, getCaseStudies } from "@/lib/lab-utils";
+import { Lab, CaseStudy } from "@/data";
 
 const LabsPage = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
 
+  const [selectedArea, setSelectedArea] = useState<string>("");
   const [selectedTopic, setSelectedTopic] = useState<string>("");
   const [selectedPersona, setSelectedPersona] = useState<string>("");
-  const [selectedDifficulty, setSelectedDifficulty] = useState<string>("");
+  const [selectedCaseStudy, setSelectedCaseStudy] = useState<string>("");
+  const [availableCaseStudies, setAvailableCaseStudies] = useState<CaseStudy[]>(
+    []
+  );
   const [filteredLabs, setFilteredLabs] = useState<Lab[]>([]);
   const [selectedLab, setSelectedLab] = useState<Lab | null>(null);
 
-  const topics = getTopics();
+  const areas = getAreas();
   const personas = getPersonas();
-  const difficulties = getDifficulties();
+  const topics = getTopics(selectedArea);
+
+  // Reset topic and case study when area changes
+  useEffect(() => {
+    setSelectedTopic("");
+    setSelectedCaseStudy("");
+    setAvailableCaseStudies([]);
+  }, [selectedArea]);
+
+  // Update available case studies when topic changes
+  useEffect(() => {
+    if (selectedArea && selectedTopic) {
+      const caseStudies = getCaseStudies(selectedArea, selectedTopic);
+      setAvailableCaseStudies(caseStudies);
+      setSelectedCaseStudy("");
+    } else {
+      setAvailableCaseStudies([]);
+      setSelectedCaseStudy("");
+    }
+  }, [selectedArea, selectedTopic]);
 
   useEffect(() => {
-    if (selectedTopic && selectedPersona && selectedDifficulty) {
+    if (selectedArea && selectedTopic && selectedPersona && selectedCaseStudy) {
       const labs = filterLabs(
+        selectedArea,
         selectedTopic,
         selectedPersona,
-        selectedDifficulty
+        selectedCaseStudy
       );
       setFilteredLabs(labs);
       setSelectedLab(labs.length > 0 ? labs[0] : null);
@@ -39,7 +70,18 @@ const LabsPage = () => {
       setFilteredLabs([]);
       setSelectedLab(null);
     }
-  }, [selectedTopic, selectedPersona, selectedDifficulty]);
+  }, [selectedArea, selectedTopic, selectedPersona, selectedCaseStudy]);
+
+  const handleDownload = (filePath: string | undefined) => {
+    if (filePath) {
+      const link = document.createElement("a");
+      link.href = filePath;
+      link.download = filePath.split("/").pop() || "lab-sheet.html";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -73,7 +115,7 @@ const LabsPage = () => {
             AI-Powered Labs
           </h1>
           <p className="text-gray-600 mt-4 max-w-2xl mx-auto">
-            Select your topic, persona, and difficulty level to access
+            Select your area, topic, persona, and case study to access
             interactive learning materials designed to enhance your software
             engineering skills.
           </p>
@@ -81,11 +123,19 @@ const LabsPage = () => {
 
         {/* Filters */}
         <motion.div
-          className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8"
+          className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8"
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
+          <SelectFilter
+            label="Area"
+            options={areas.map((area) => capitalizeFirstLetter(area))}
+            value={selectedArea}
+            onChange={setSelectedArea}
+            icon={<Search size={18} />}
+          />
+
           <SelectFilter
             label="Topic"
             options={topics.map((topic) => capitalizeFirstLetter(topic))}
@@ -103,12 +153,18 @@ const LabsPage = () => {
           />
 
           <SelectFilter
-            label="Difficulty"
-            options={difficulties.map((difficulty) =>
-              capitalizeFirstLetter(difficulty)
-            )}
-            value={selectedDifficulty}
-            onChange={setSelectedDifficulty}
+            label="Case Study"
+            options={availableCaseStudies.map((study) => study.name)}
+            value={
+              selectedCaseStudy
+                ? availableCaseStudies.find((s) => s.id === selectedCaseStudy)
+                    ?.name || ""
+                : ""
+            }
+            onChange={(name) => {
+              const study = availableCaseStudies.find((s) => s.name === name);
+              setSelectedCaseStudy(study ? study.id : "");
+            }}
             icon={<Search size={18} />}
           />
         </motion.div>
@@ -121,12 +177,25 @@ const LabsPage = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">
-              {selectedLab.title}
-            </h2>
-            {selectedLab.description && (
-              <p className="text-gray-600 mb-6">{selectedLab.description}</p>
-            )}
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                  {selectedLab.title}
+                </h2>
+                {selectedLab.description && (
+                  <p className="text-gray-600">{selectedLab.description}</p>
+                )}
+              </div>
+              {selectedLab.downloadFile && (
+                <button
+                  onClick={() => handleDownload(selectedLab.downloadFile)}
+                  className="flex items-center justify-center gap-2 bg-[#FF9933] hover:bg-[#E67300] text-white font-medium py-2 px-4 rounded-lg transition-colors min-w-40"
+                >
+                  <Download size={18} />
+                  Download Lab Sheet
+                </button>
+              )}
+            </div>
 
             <div className="space-y-8">
               {selectedLab.steps.map((step, index) => (
@@ -155,7 +224,7 @@ const LabsPage = () => {
               No Lab Selected
             </h3>
             <p className="text-gray-600">
-              Select a topic, persona, and difficulty level to view available
+              Select an area, topic, persona, and case study to view available
               labs.
             </p>
           </motion.div>

@@ -7,10 +7,13 @@ A Next.js-based educational platform designed to help users practice requirement
 This platform provides:
 
 - Interactive labs with structured learning paths
-- Different difficulty levels (easy, medium, hard)
+- Different software development areas (requirements engineering, coding maintainers)
+- Various topics per area (user stories, requirements engineering, etc.)
 - Role-based exercises (teacher, student, professional)
+- Configurable case studies for contextual learning
 - Points-based feedback system
 - Hint systems with progressive assistance
+- Downloadable lab sheets for offline use
 
 ## Getting Started
 
@@ -53,7 +56,9 @@ yarn dev
 ├── app/             # Next.js application routes and components
 ├── components/      # Reusable UI components
 ├── data/            # Lab content and configuration
-│   └── index.ts     # Main data structure for labs
+│   ├── index.ts     # Main data structure for labs
+│   └── lab-sheets/  # Downloadable HTML lab sheets
+├── lib/             # Utility functions
 ├── public/          # Static assets
 └── styles/          # CSS and styling
 ```
@@ -88,7 +93,17 @@ const my_new_lab = [
 ];
 ```
 
-2. Create a lab object:
+2. Create case studies for your lab:
+
+```typescript
+const myCaseStudy: CaseStudy = {
+  id: "unique-case-study-id",
+  name: "Case Study Display Name",
+  description: "Brief description of the case study scenario",
+};
+```
+
+3. Create a lab object:
 
 ```typescript
 const my_new_lab_object: Lab = {
@@ -96,21 +111,53 @@ const my_new_lab_object: Lab = {
   title: "Lab Title",
   description: "Brief description of the lab",
   steps: my_new_lab,
+  downloadFile: "/files/lab-sheets/YourLabName.html", // Optional HTML lab sheet
 };
 ```
 
-3. Add your lab to the LABS array:
+4. Add your lab to the LABS array with appropriate area, topic, and case studies:
 
 ```typescript
 export const LABS: LabCategory[] = [
   // Existing categories
   {
-    topic: "your_topic",
-    persona: "your_persona",
-    difficulty: "easy", // or "medium", "hard"
+    area: "requirements engineering", // or "coding maintainers", etc.
+    topic: "your_topic", // e.g., "user_story", "requirements_engineering"
+    persona: "your_persona", // e.g., "teacher", "student", "professional"
     labs: [my_new_lab_object],
+    caseStudies: [myCaseStudy, anotherCaseStudy],
   },
 ];
+```
+
+5. (Optional) Create and add a downloadable HTML lab sheet in the data/lab-sheets directory.
+
+## Case Study Configuration
+
+Case studies provide context for labs and determine how the second prompt is rendered:
+
+1. Create case studies with unique IDs, display names, and descriptions
+2. Assign case studies to lab categories (area/topic combinations)
+3. The platform will automatically update lab prompts based on the selected case study
+
+For example:
+
+```typescript
+// Define case studies
+const healthcareCaseStudy: CaseStudy = {
+  id: "healthcare",
+  name: "Healthcare App",
+  description: "A patient management system for healthcare providers."
+};
+
+// Assign to a lab category
+{
+  area: "requirements engineering",
+  topic: "user_story",
+  persona: "professional",
+  labs: [my_professional_lab],
+  caseStudies: [healthcareCaseStudy, ecommerceCaseStudy]
+}
 ```
 
 ## Development Workflow
@@ -162,7 +209,3 @@ npm run build
 # or
 vercel
 ```
-
-## License
-
-[MIT](LICENSE)

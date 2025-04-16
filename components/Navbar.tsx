@@ -9,11 +9,11 @@ import { useRouter } from "next/navigation";
 const Navbar = () => {
   const router = useRouter();
   return (
-    <nav className="flex px-10 py-3 justify-between items-center relative">
+    <nav className="flex px-10 py-4 justify-between items-center relative shadow-sm">
       {/* Logo */}
       <button
         onClick={() => router.push("/")}
-        className="rounded-full w-12 aspect-square"
+        className="rounded-full w-14 aspect-square hover:scale-105 transition-transform"
       >
         <Image
           className="rounded-full"
@@ -25,19 +25,12 @@ const Navbar = () => {
           height={200}
         />
       </button>
-      <div className="absolute left-1/2 transform -translate-x-1/2 flex gap-12 items-center">
+
+      {/* Navigation Links */}
+      <div className="flex gap-8 items-center">
         {NAVLINKS.map((navlink) => (
           <Navlink key={navlink.name} navlink={navlink} />
         ))}
-      </div>
-      {/* Login and Sign Up */}
-      <div className="flex gap-2">
-        <button className="text-black px-4 rounded-md text-sm py-2">
-          Sign Up
-        </button>
-        <button className="bg-black text-white px-6 rounded-md text-sm py-1">
-          Login
-        </button>
       </div>
     </nav>
   );
@@ -45,8 +38,13 @@ const Navbar = () => {
 
 const Navlink = ({ navlink: { name, href } }: { navlink: NavlinkType }) => {
   return (
-    <Link href={href}>
-      <p className="text-xs text-black/60 font-medium">{name}</p>
+    <Link href={href} className="group">
+      <div className="relative py-2">
+        <p className="text-base font-medium text-gray-700 group-hover:text-[#FF9933] transition-colors">
+          {name}
+        </p>
+        <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#FF9933] group-hover:w-full transition-all duration-300 ease-in-out"></span>
+      </div>
     </Link>
   );
 };

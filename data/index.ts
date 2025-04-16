@@ -1,4 +1,4 @@
-const user_story_teacher_easy = [
+const user_story_teacher = [
   {
     title: "Part 1: Setup",
     time: 5,
@@ -88,7 +88,7 @@ const user_story_teacher_easy = [
   },
 ];
 
-const requirements_engineering_teacher_easy = [
+const requirements_engineering_teacher = [
   {
     title: "Part 1: Setup",
     time: 5,
@@ -173,12 +173,12 @@ const requirements_engineering_teacher_easy = [
 const DATA = {
   user_story: {
     teacher: {
-      easy: user_story_teacher_easy,
+      easy: user_story_teacher,
     },
   },
   requirements_engineering: {
     teacher: {
-      easy: requirements_engineering_teacher_easy,
+      easy: requirements_engineering_teacher,
     },
   },
 };
@@ -197,41 +197,94 @@ export type Lab = {
   title: string;
   description?: string;
   steps: Step[];
+  downloadFile?: string;
+};
+
+export type CaseStudy = {
+  id: string;
+  name: string;
+  description: string;
 };
 
 export type LabCategory = {
-  topic: "requirements_engineering" | "user_story";
+  area: "requirements engineering" | "coding maintainers";
+  topic: "requirements_engineering" | "user_story" | "acceptance_criteria";
   persona: "teacher" | "student" | "professional";
-  difficulty: "easy" | "medium" | "hard";
   labs: Lab[];
+  caseStudies: CaseStudy[];
 };
 
-const user_story_teacher_easy_lab: Lab = {
-  id: "user-story-teacher-easy",
+const user_story_teacher_lab: Lab = {
+  id: "user-story-teacher",
   title: "User Story Writing Practice",
   description: "Learn to write effective user stories with guided feedback",
-  steps: user_story_teacher_easy,
+  steps: user_story_teacher,
+  downloadFile: "/files/lab-sheets/User-Story-teacher-beginner.html",
 };
 
-const requirements_engineering_teacher_easy_lab: Lab = {
-  id: "requirements-engineering-teacher-easy",
+const requirements_engineering_teacher_lab: Lab = {
+  id: "requirements-engineering-teacher",
   title: "Use Case Analysis Practice",
   description: "Learn to analyze and improve use case flows",
-  steps: requirements_engineering_teacher_easy,
+  steps: requirements_engineering_teacher,
+  downloadFile: "/files/lab-sheets/ReqEngineering-teacher-beginner.html",
+};
+
+// Case Studies
+const foodSharingCaseStudy: CaseStudy = {
+  id: "food-sharing",
+  name: "Food Sharing App",
+  description:
+    "An app that connects people in food poverty with allotment owners who have excess produce.",
+};
+
+const ecommerceCaseStudy: CaseStudy = {
+  id: "ecommerce",
+  name: "E-commerce Platform",
+  description:
+    "A platform for buying and selling products online with secure checkout.",
+};
+
+const healthcareCaseStudy: CaseStudy = {
+  id: "healthcare",
+  name: "Healthcare App",
+  description:
+    "An app for patients to book appointments and manage their healthcare.",
+};
+
+const lmsCaseStudy: CaseStudy = {
+  id: "lms",
+  name: "Learning Management System",
+  description:
+    "A system for educational institutions to manage courses and track student progress.",
+};
+
+const smartHomeCaseStudy: CaseStudy = {
+  id: "smart-home",
+  name: "Smart Home System",
+  description:
+    "A system to control home devices remotely and automate routine tasks.",
 };
 
 export const LABS: LabCategory[] = [
   {
+    area: "requirements engineering",
     topic: "user_story",
     persona: "teacher",
-    difficulty: "easy",
-    labs: [user_story_teacher_easy_lab],
+    labs: [user_story_teacher_lab],
+    caseStudies: [
+      foodSharingCaseStudy,
+      ecommerceCaseStudy,
+      healthcareCaseStudy,
+      lmsCaseStudy,
+    ],
   },
   {
+    area: "requirements engineering",
     topic: "requirements_engineering",
     persona: "teacher",
-    difficulty: "easy",
-    labs: [requirements_engineering_teacher_easy_lab],
+    labs: [requirements_engineering_teacher_lab],
+    caseStudies: [ecommerceCaseStudy, healthcareCaseStudy, smartHomeCaseStudy],
   },
 ];
 
