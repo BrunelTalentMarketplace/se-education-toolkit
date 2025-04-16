@@ -209,21 +209,21 @@ export type CaseStudy = {
 export type LabCategory = {
   area: "requirements engineering" | "coding maintainers";
   topic: "requirements_engineering" | "user_story" | "acceptance_criteria";
-  persona: "teacher" | "student" | "professional";
+  persona: "tutor" | "student" | "professional";
   labs: Lab[];
   caseStudies: CaseStudy[];
 };
 
-const user_story_teacher_lab: Lab = {
-  id: "user-story-teacher",
+const user_story_tutor_lab: Lab = {
+  id: "user-story-tutor",
   title: "User Story Writing Practice",
   description: "Learn to write effective user stories with guided feedback",
   steps: user_story_teacher,
   downloadFile: "/files/lab-sheets/User-Story-teacher-beginner.html",
 };
 
-const requirements_engineering_teacher_lab: Lab = {
-  id: "requirements-engineering-teacher",
+const requirements_engineering_tutor_lab: Lab = {
+  id: "requirements-engineering-tutor",
   title: "Use Case Analysis Practice",
   description: "Learn to analyze and improve use case flows",
   steps: requirements_engineering_teacher,
@@ -270,8 +270,8 @@ export const LABS: LabCategory[] = [
   {
     area: "requirements engineering",
     topic: "user_story",
-    persona: "teacher",
-    labs: [user_story_teacher_lab],
+    persona: "tutor",
+    labs: [user_story_tutor_lab],
     caseStudies: [
       foodSharingCaseStudy,
       ecommerceCaseStudy,
@@ -282,8 +282,8 @@ export const LABS: LabCategory[] = [
   {
     area: "requirements engineering",
     topic: "requirements_engineering",
-    persona: "teacher",
-    labs: [requirements_engineering_teacher_lab],
+    persona: "tutor",
+    labs: [requirements_engineering_tutor_lab],
     caseStudies: [ecommerceCaseStudy, healthcareCaseStudy, smartHomeCaseStudy],
   },
 ];
