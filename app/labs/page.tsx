@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, Suspense } from "react";
 import { motion, useInView } from "framer-motion";
 import Image from "next/image";
 import {
@@ -11,37 +11,79 @@ import {
   Filter,
   Download,
 } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import LabStep from "@/components/labs/LabStep";
 import { filterLabs } from "@/lib/lab-utils";
 import { getPersonas } from "@/lib/lab-utils";
 import SelectFilter from "@/components/labs/SelectFilter";
-import { getTopics, getAreas, getCaseStudies } from "@/lib/lab-utils";
+import {
+  getTopics,
+  getAreas,
+  getCaseStudies,
+  formatTopicForQuery,
+} from "@/lib/lab-utils";
 import { Lab, CaseStudy } from "@/data";
 
 const LabsPage = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
 
-  const [selectedArea, setSelectedArea] = useState<string>("");
-  const [selectedTopic, setSelectedTopic] = useState<string>("");
-  const [selectedPersona, setSelectedPersona] = useState<string>("");
-  const [selectedCaseStudy, setSelectedCaseStudy] = useState<string>("");
+  // Initialize state from URL params
+  const initialArea = searchParams.get("area") || "";
+  const initialTopic = searchParams.get("topic") || "";
+  const initialPersona = searchParams.get("persona") || "";
+  const initialCaseStudy = searchParams.get("caseStudy") || "";
+
+  const [selectedArea, setSelectedArea] = useState<string>(initialArea);
+  const [selectedTopic, setSelectedTopic] = useState<string>(initialTopic);
+  const [selectedPersona, setSelectedPersona] =
+    useState<string>(initialPersona);
+  const [selectedCaseStudy, setSelectedCaseStudy] =
+    useState<string>(initialCaseStudy);
   const [availableCaseStudies, setAvailableCaseStudies] = useState<CaseStudy[]>(
     []
   );
   const [filteredLabs, setFilteredLabs] = useState<Lab[]>([]);
   const [selectedLab, setSelectedLab] = useState<Lab | null>(null);
+  const [selectedCaseStudyData, setSelectedCaseStudyData] =
+    useState<CaseStudy | null>(null);
 
   const areas = getAreas();
   const personas = getPersonas();
   const topics = getTopics(selectedArea);
 
+  // Update URL when filters change
+  const updateURLParams = (
+    area: string,
+    topic: string,
+    persona: string,
+    caseStudy: string
+  ) => {
+    const params = new URLSearchParams();
+    if (area) params.set("area", area);
+    if (topic) params.set("topic", topic);
+    if (persona) params.set("persona", persona);
+    if (caseStudy) params.set("caseStudy", caseStudy);
+
+    // Update URL without refreshing the page
+    router.push(`/labs?${params.toString()}`, { scroll: false });
+  };
+
   // Reset topic and case study when area changes
   useEffect(() => {
-    setSelectedTopic("");
-    setSelectedCaseStudy("");
+    const newTopic = "";
+    const newCaseStudy = "";
+    setSelectedTopic(newTopic);
+    setSelectedCaseStudy(newCaseStudy);
     setAvailableCaseStudies([]);
+
+    // Update URL
+    if (selectedArea) {
+      updateURLParams(selectedArea, newTopic, selectedPersona, newCaseStudy);
+    }
   }, [selectedArea]);
 
   // Update available case studies when topic changes
@@ -49,26 +91,65 @@ const LabsPage = () => {
     if (selectedArea && selectedTopic) {
       const caseStudies = getCaseStudies(selectedArea, selectedTopic);
       setAvailableCaseStudies(caseStudies);
-      setSelectedCaseStudy("");
+
+      // Reset case study selection
+      const newCaseStudy = "";
+      setSelectedCaseStudy(newCaseStudy);
+
+      // Update URL
+      updateURLParams(
+        selectedArea,
+        selectedTopic,
+        selectedPersona,
+        newCaseStudy
+      );
     } else {
       setAvailableCaseStudies([]);
       setSelectedCaseStudy("");
     }
   }, [selectedArea, selectedTopic]);
 
+  // Update persona selection
   useEffect(() => {
-    if (selectedArea && selectedTopic && selectedPersona && selectedCaseStudy) {
-      const labs = filterLabs(
+    if (selectedPersona) {
+      updateURLParams(
         selectedArea,
         selectedTopic,
         selectedPersona,
         selectedCaseStudy
       );
-      setFilteredLabs(labs);
-      setSelectedLab(labs.length > 0 ? labs[0] : null);
+    }
+  }, [selectedPersona]);
+
+  // Update case study selection
+  useEffect(() => {
+    if (selectedCaseStudy) {
+      updateURLParams(
+        selectedArea,
+        selectedTopic,
+        selectedPersona,
+        selectedCaseStudy
+      );
+    }
+  }, [selectedCaseStudy]);
+
+  // Filter labs based on selected criteria
+  useEffect(() => {
+    if (selectedArea && selectedTopic && selectedPersona && selectedCaseStudy) {
+      const result = filterLabs(
+        selectedArea,
+        selectedTopic,
+        selectedPersona,
+        selectedCaseStudy
+      );
+
+      setFilteredLabs(result.labs);
+      setSelectedCaseStudyData(result.selectedCaseStudy);
+      setSelectedLab(result.labs.length > 0 ? result.labs[0] : null);
     } else {
       setFilteredLabs([]);
       setSelectedLab(null);
+      setSelectedCaseStudyData(null);
     }
   }, [selectedArea, selectedTopic, selectedPersona, selectedCaseStudy]);
 
@@ -138,7 +219,7 @@ const LabsPage = () => {
 
           <SelectFilter
             label="Topic"
-            options={topics.map((topic) => capitalizeFirstLetter(topic))}
+            options={topics}
             value={selectedTopic}
             onChange={setSelectedTopic}
             icon={<Search size={18} />}
@@ -204,6 +285,8 @@ const LabsPage = () => {
                   step={step}
                   index={index}
                   copyToClipboard={copyToClipboard}
+                  caseStudy={index === 1 ? selectedCaseStudyData : null}
+                  isSecondStep={index === 1}
                 />
               ))}
             </div>

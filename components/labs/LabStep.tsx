@@ -1,13 +1,34 @@
 import { Copy, Clock } from "lucide-react";
 import { Step } from "@/data/index";
+import { CaseStudy } from "@/data";
 
 interface LabStepProps {
   step: Step;
   index: number;
   copyToClipboard: (text: string) => void;
+  caseStudy?: CaseStudy | null;
+  isSecondStep?: boolean;
 }
 
-const LabStep: React.FC<LabStepProps> = ({ step, index, copyToClipboard }) => {
+const LabStep: React.FC<LabStepProps> = ({
+  step,
+  index,
+  copyToClipboard,
+  caseStudy,
+  isSecondStep,
+}) => {
+  // Determine prompt source
+  const getPrompt = () => {
+    // If this is the second step and we have a case study, use the case study prompt
+    if (isSecondStep && caseStudy) {
+      return caseStudy.prompt;
+    }
+    // Otherwise use the step prompt if it exists
+    return step.prompt;
+  };
+
+  const prompt = getPrompt();
+
   return (
     <div className="border border-gray-200 rounded-lg p-4">
       <div className="flex justify-between items-center mb-4">
@@ -59,12 +80,16 @@ const LabStep: React.FC<LabStepProps> = ({ step, index, copyToClipboard }) => {
         </div>
       )}
 
-      {step.prompt && (
+      {prompt && (
         <div className="mb-4">
           <div className="flex justify-between items-center mb-2">
-            <h4 className="font-medium text-gray-700">Prompt</h4>
+            <h4 className="font-medium text-gray-700">
+              {isSecondStep && caseStudy
+                ? `${caseStudy.name} Prompt`
+                : "Prompt"}
+            </h4>
             <button
-              onClick={() => copyToClipboard(step.prompt || "")}
+              onClick={() => copyToClipboard(prompt)}
               className="flex items-center gap-1 text-[#FF9933] text-sm hover:text-[#E67300] transition-colors"
             >
               <Copy size={14} />
@@ -72,8 +97,17 @@ const LabStep: React.FC<LabStepProps> = ({ step, index, copyToClipboard }) => {
             </button>
           </div>
           <div className="bg-gray-50 p-3 rounded-md text-sm text-gray-700 whitespace-pre-line overflow-auto max-h-64">
-            {step.prompt}
+            {prompt}
           </div>
+        </div>
+      )}
+
+      {isSecondStep && caseStudy && (
+        <div className="mt-4 p-3 bg-blue-50 rounded-md">
+          <p className="text-sm text-blue-800">
+            <span className="font-medium">Case Study: </span>
+            {caseStudy.description}
+          </p>
         </div>
       )}
     </div>

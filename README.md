@@ -9,8 +9,9 @@ This platform provides:
 - Interactive labs with structured learning paths
 - Different software development areas (requirements engineering, coding maintainers)
 - Various topics per area (user stories, requirements engineering, etc.)
-- Role-based exercises (teacher, student, professional)
-- Configurable case studies for contextual learning
+- Role-based exercises (tutor, student, professional)
+- Configurable case studies with dedicated prompts
+- URL-based filtering with query parameters
 - Points-based feedback system
 - Hint systems with progressive assistance
 - Downloadable lab sheets for offline use
@@ -60,6 +61,7 @@ yarn dev
 │   └── lab-sheets/  # Downloadable HTML lab sheets
 ├── lib/             # Utility functions
 ├── public/          # Static assets
+│   └── files/       # Public files like downloadable resources
 └── styles/          # CSS and styling
 ```
 
@@ -87,19 +89,21 @@ const my_new_lab = [
         content: "Content details...",
       },
     ],
-    prompt: `Your detailed prompt here...`,
+    // The prompt for Part 2 comes from the selected case study
+    prompt: null,
   },
   // Add more steps as needed
 ];
 ```
 
-2. Create case studies for your lab:
+2. Create case studies with prompts:
 
 ```typescript
 const myCaseStudy: CaseStudy = {
   id: "unique-case-study-id",
   name: "Case Study Display Name",
   description: "Brief description of the case study scenario",
+  prompt: `Detailed prompt for the case study that will be used in the second step of the lab...`,
 };
 ```
 
@@ -122,42 +126,64 @@ export const LABS: LabCategory[] = [
   // Existing categories
   {
     area: "requirements engineering", // or "coding maintainers", etc.
-    topic: "your_topic", // e.g., "user_story", "requirements_engineering"
-    persona: "your_persona", // e.g., "teacher", "student", "professional"
+    topic: "user_stories_and_acceptance_criteria", // or "use_cases"
+    persona: "tutor", // e.g., "tutor", "student", "professional"
     labs: [my_new_lab_object],
     caseStudies: [myCaseStudy, anotherCaseStudy],
   },
 ];
 ```
 
-5. (Optional) Create and add a downloadable HTML lab sheet in the data/lab-sheets directory.
+5. (Optional) Create and add a downloadable HTML lab sheet in the public/files/lab-sheets directory.
 
 ## Case Study Configuration
 
-Case studies provide context for labs and determine how the second prompt is rendered:
+Case studies provide context for labs and supply prompts for the second step of each lab:
 
-1. Create case studies with unique IDs, display names, and descriptions
-2. Assign case studies to lab categories (area/topic combinations)
-3. The platform will automatically update lab prompts based on the selected case study
+1. Create case studies with unique IDs, display names, descriptions, and detailed prompts
+2. The prompt in a case study is used for the second step of any lab
+3. Lab steps with index 1 (the second step) should typically have their prompt set to null
+4. Assign case studies to lab categories (area/topic combinations)
 
 For example:
 
 ```typescript
 // Define case studies
-const healthcareCaseStudy: CaseStudy = {
-  id: "healthcare",
-  name: "Healthcare App",
-  description: "A patient management system for healthcare providers."
+const resetPasswordCaseStudy: CaseStudy = {
+  id: "reset-password",
+  name: "Reset Password",
+  description: "A system to reset a user's password.",
+  prompt: `
+    1. User clicks reset password
+    2. System sends them the link
+    3. User enters new password
+    4. System updates the account
+  `,
 };
 
 // Assign to a lab category
 {
   area: "requirements engineering",
-  topic: "user_story",
-  persona: "professional",
-  labs: [my_professional_lab],
-  caseStudies: [healthcareCaseStudy, ecommerceCaseStudy]
+  topic: "use_cases",
+  persona: "tutor",
+  labs: [my_tutor_lab],
+  caseStudies: [resetPasswordCaseStudy]
 }
+```
+
+## Query Parameter Filtering
+
+The platform supports URL-based filtering with query parameters:
+
+- `?area=requirements%20engineering` - Filter by area
+- `?topic=User%20Stories%20And%20Acceptance%20Criteria` - Filter by topic
+- `?persona=tutor` - Filter by persona
+- `?caseStudy=reset-password` - Filter by case study ID
+
+You can combine parameters to create direct links to specific labs:
+
+```
+/labs?area=requirements%20engineering&topic=Use%20Cases&persona=tutor&caseStudy=reset-password
 ```
 
 ## Development Workflow

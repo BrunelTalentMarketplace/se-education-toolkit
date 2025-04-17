@@ -150,12 +150,7 @@ const requirements_engineering_teacher = [
     `,
       },
     ],
-    prompt: `
-    1. User clicks reset password 
-    2. System sends them the link 
-    3. User enters new password 
-    4. System updates the account,
-    `,
+    prompt: null,
   },
   {
     title: "Part 3: Documentation",
@@ -172,14 +167,10 @@ const requirements_engineering_teacher = [
 
 const DATA = {
   user_story: {
-    teacher: {
-      easy: user_story_teacher,
-    },
+    teacher: user_story_teacher,
   },
   requirements_engineering: {
-    teacher: {
-      easy: requirements_engineering_teacher,
-    },
+    teacher: requirements_engineering_teacher,
   },
 };
 
@@ -189,7 +180,7 @@ export type Step = {
   setup?: string[];
   guidelines?: string[];
   details?: Array<{ heading: string; content: string }>;
-  prompt: string | null;
+  prompt?: string | null;
 };
 
 export type Lab = {
@@ -204,11 +195,12 @@ export type CaseStudy = {
   id: string;
   name: string;
   description: string;
+  prompt: string;
 };
 
 export type LabCategory = {
   area: "requirements engineering" | "coding maintainers";
-  topic: "requirements_engineering" | "user_story" | "acceptance_criteria";
+  topic: "user_stories_and_acceptance_criteria" | "use_cases";
   persona: "tutor" | "student" | "professional";
   labs: Lab[];
   caseStudies: CaseStudy[];
@@ -236,55 +228,50 @@ const foodSharingCaseStudy: CaseStudy = {
   name: "Food Sharing App",
   description:
     "An app that connects people in food poverty with allotment owners who have excess produce.",
+  prompt: `
+    We will work on a problem based on UN SDG #2 (Zero Hunger). 
+    Problem statement:
+    "People in food poverty need access to fresh food in a way that preserves their dignity and avoids excessive bureaucracy."
+    Our primary users are those in food poverty but want to access healthy food without putting their dignity at stake. They require less cumbersome ways to get healthy produce. 
+    As a solution, we want to develop an app that helps people locate fresh produce in their area more easily. In our solution, allotment owners can advertise their excess produce and when and how it can be picked up.  Registered users can browse and check out the produce they like. 
+    We have two personas. 
+    Sarah is a young mother of two who has recently lost her job. She believes buying frozen or fast food is not a matter of ignorance but of being unable to afford "healthy food". She doesn't want to use a food bank because she doesn't want to be seen asking for help.  We will call her our Allotment User.
+    Benjamin has owned an allotment for years, and he has been overproducing. He wants to transform part of his allotment to provide those on benefits, pensioners on state pension and those on a low-income free organic fruit and vegetables. But he doesn't know how to reach those people. We will call him the Allotment Owner.
+    Here is a user story for Allotment User:
+    As an allotment user, I want to create an app account so that I can save my preferences. 
+    Acceptance criteria:
+    Given that the user is on the register page, when the user enters email, password, types of fresh food, and locations to pick up the food from, the user should be registered and directed to the login page. 
+    Given that the user entered a password that doesn't meet password requirements, when the registration button is clicked, the error message "invalid password" is displayed.
+    Given that the user entered an invalid email, when the registration button is clicked, the error message "invalid email" is displayed.
+  `,
 };
 
-const ecommerceCaseStudy: CaseStudy = {
-  id: "ecommerce",
-  name: "E-commerce Platform",
-  description:
-    "A platform for buying and selling products online with secure checkout.",
-};
-
-const healthcareCaseStudy: CaseStudy = {
-  id: "healthcare",
-  name: "Healthcare App",
-  description:
-    "An app for patients to book appointments and manage their healthcare.",
-};
-
-const lmsCaseStudy: CaseStudy = {
-  id: "lms",
-  name: "Learning Management System",
-  description:
-    "A system for educational institutions to manage courses and track student progress.",
-};
-
-const smartHomeCaseStudy: CaseStudy = {
-  id: "smart-home",
-  name: "Smart Home System",
-  description:
-    "A system to control home devices remotely and automate routine tasks.",
+const resetPasswordCaseStudy: CaseStudy = {
+  id: "reset-password",
+  name: "Reset Password",
+  description: "A system to reset a user's password.",
+  prompt: `
+    1. User clicks reset password 
+    2. System sends them the link 
+    3. User enters new password 
+    4. System updates the account,
+  `,
 };
 
 export const LABS: LabCategory[] = [
   {
     area: "requirements engineering",
-    topic: "user_story",
+    topic: "user_stories_and_acceptance_criteria",
     persona: "tutor",
     labs: [user_story_tutor_lab],
-    caseStudies: [
-      foodSharingCaseStudy,
-      ecommerceCaseStudy,
-      healthcareCaseStudy,
-      lmsCaseStudy,
-    ],
+    caseStudies: [foodSharingCaseStudy],
   },
   {
     area: "requirements engineering",
-    topic: "requirements_engineering",
+    topic: "use_cases",
     persona: "tutor",
     labs: [requirements_engineering_tutor_lab],
-    caseStudies: [ecommerceCaseStudy, healthcareCaseStudy, smartHomeCaseStudy],
+    caseStudies: [resetPasswordCaseStudy],
   },
 ];
 
