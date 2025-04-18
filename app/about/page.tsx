@@ -230,8 +230,8 @@ export default function AboutPage() {
                 </h2>
                 <p className="text-gray-600 mb-6">
                   This project was developed by researchers at Brunel University
-                  London, combining expertise in software engineering,
-                  education, and artificial intelligence.
+                  London, combining expertise in software engineering, computer
+                  science education, and artificial intelligence.
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">

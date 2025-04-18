@@ -50,11 +50,12 @@ body {
 .slider-container {
   width: 100%;
   display: flex;
+  overflow: hidden;
 }
 
 .testimonials-track {
   display: flex;
-  animation: scroll 60s linear infinite;
+  animation: scroll 120s linear infinite; /* Slower animation (120s instead of 60s) */
 }
 
 @keyframes scroll {
@@ -62,7 +63,9 @@ body {
     transform: translateX(0);
   }
   100% {
-    transform: translateX(calc(-100% - 1.5rem)); /* Account for gap */
+    transform: translateX(
+      -50%
+    ); /* Move exactly half the distance since we duplicated the items */
   }
 }
 
