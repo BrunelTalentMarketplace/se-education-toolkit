@@ -40,3 +40,33 @@ body {
   filter: blur(40px);
   z-index: -1;
 } */
+
+/* Testimonial Slider Animations */
+.slider-container {
+  width: 100%;
+  display: flex;
+}
+
+.testimonials-track {
+  display: flex;
+  animation: scroll 60s linear infinite;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(-100% - 1.5rem)); /* Account for gap */
+  }
+}
+
+/* Pause animation on hover */
+.slider-container:hover .testimonials-track {
+  animation-play-state: paused;
+}
+
+/* Smooth animation */
+.animate-scroll {
+  will-change: transform;
+}

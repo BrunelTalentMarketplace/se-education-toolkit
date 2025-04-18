@@ -25,24 +25,27 @@ import {
 } from "@/lib/lab-utils";
 import { Lab, CaseStudy } from "@/data";
 
+// Helper for converting between URL format and internal format
+const convertTopicFromUrl = (urlTopic: string): string => {
+  // Case-insensitive comparison to standard formatted topics
+  if (urlTopic.toLowerCase() === "use cases") return "Use Cases";
+  if (urlTopic.toLowerCase() === "user stories and acceptance criteria")
+    return "User Stories And Acceptance Criteria";
+  return urlTopic;
+};
+
 const LabsPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
+  const initialLoadRef = useRef(true);
 
-  // Initialize state from URL params
-  const initialArea = searchParams.get("area") || "";
-  const initialTopic = searchParams.get("topic") || "";
-  const initialPersona = searchParams.get("persona") || "";
-  const initialCaseStudy = searchParams.get("caseStudy") || "";
-
-  const [selectedArea, setSelectedArea] = useState<string>(initialArea);
-  const [selectedTopic, setSelectedTopic] = useState<string>(initialTopic);
-  const [selectedPersona, setSelectedPersona] =
-    useState<string>(initialPersona);
-  const [selectedCaseStudy, setSelectedCaseStudy] =
-    useState<string>(initialCaseStudy);
+  // Initialize state with empty values first
+  const [selectedArea, setSelectedArea] = useState<string>("");
+  const [selectedTopic, setSelectedTopic] = useState<string>("");
+  const [selectedPersona, setSelectedPersona] = useState<string>("");
+  const [selectedCaseStudy, setSelectedCaseStudy] = useState<string>("");
   const [availableCaseStudies, setAvailableCaseStudies] = useState<CaseStudy[]>(
     []
   );
@@ -51,9 +54,148 @@ const LabsPage = () => {
   const [selectedCaseStudyData, setSelectedCaseStudyData] =
     useState<CaseStudy | null>(null);
 
+  // Utility function for capitalization
+  const capitalizeFirstLetter = (string: string): string => {
+    return string
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
+
+  // Get filter options
   const areas = getAreas();
   const personas = getPersonas();
   const topics = getTopics(selectedArea);
+
+  // Handle initial URL params
+  useEffect(() => {
+    const loadFromURL = async () => {
+      if (!initialLoadRef.current) return;
+      console.log("Loading from URL params");
+
+      try {
+        // 1. Handle Area
+        const urlArea = searchParams.get("area") || "";
+        if (!urlArea) {
+          initialLoadRef.current = false;
+          return;
+        }
+
+        // Find the proper case version of the area
+        const matchedArea = areas.find(
+          (area) => area.toLowerCase() === urlArea.toLowerCase()
+        );
+
+        if (!matchedArea) {
+          console.log("Could not find matching area for:", urlArea);
+          initialLoadRef.current = false;
+          return;
+        }
+
+        console.log("Setting area:", matchedArea);
+        // Set area with the properly cased version
+        setSelectedArea(matchedArea);
+
+        // 2. Get topics for this area
+        const areaTopics = getTopics(matchedArea);
+        console.log("Available topics:", areaTopics);
+
+        // 3. Handle Topic
+        const urlTopic = searchParams.get("topic") || "";
+        if (!urlTopic) {
+          initialLoadRef.current = false;
+          return;
+        }
+
+        // Convert the URL topic to a standard format first
+        const standardizedTopic = convertTopicFromUrl(urlTopic);
+        console.log("Standardized topic:", standardizedTopic);
+
+        // Then find a match in our available topics
+        const matchedTopic = areaTopics.find(
+          (topic) => topic.toLowerCase() === standardizedTopic.toLowerCase()
+        );
+
+        if (!matchedTopic) {
+          console.log(
+            "Could not find matching topic for:",
+            urlTopic,
+            "standardized as:",
+            standardizedTopic
+          );
+          console.log("Available topics are:", areaTopics);
+          initialLoadRef.current = false;
+          return;
+        }
+
+        console.log("Setting topic:", matchedTopic);
+        setSelectedTopic(matchedTopic);
+
+        // 4. Get case studies - we have an area and topic now
+        const topicCaseStudies = getCaseStudies(matchedArea, matchedTopic);
+        console.log("Available case studies:", topicCaseStudies);
+        setAvailableCaseStudies(topicCaseStudies);
+
+        // 5. Handle Persona
+        const urlPersona = searchParams.get("persona") || "";
+        const matchedPersona = personas.find(
+          (persona) => persona.toLowerCase() === urlPersona.toLowerCase()
+        );
+
+        if (!matchedPersona && urlPersona) {
+          console.log("Could not find matching persona for:", urlPersona);
+          initialLoadRef.current = false;
+          return;
+        }
+
+        if (matchedPersona) {
+          console.log("Setting persona:", matchedPersona);
+          setSelectedPersona(matchedPersona);
+
+          // 6. Handle Case Study
+          const urlCaseStudy = searchParams.get("caseStudy") || "";
+
+          if (!urlCaseStudy) {
+            initialLoadRef.current = false;
+            return;
+          }
+
+          // Try direct match first
+          let matchedCaseStudy = topicCaseStudies.find(
+            (study) => study.id.toLowerCase() === urlCaseStudy.toLowerCase()
+          );
+
+          // If no match, try matching by name (case-insensitive)
+          if (!matchedCaseStudy) {
+            matchedCaseStudy = topicCaseStudies.find(
+              (study) => study.name.toLowerCase() === urlCaseStudy.toLowerCase()
+            );
+          }
+
+          if (!matchedCaseStudy) {
+            console.log(
+              "Could not find matching case study for:",
+              urlCaseStudy
+            );
+            console.log(
+              "Available case studies are:",
+              topicCaseStudies.map((cs) => ({ id: cs.id, name: cs.name }))
+            );
+            initialLoadRef.current = false;
+            return;
+          }
+
+          console.log("Setting case study:", matchedCaseStudy.id);
+          setSelectedCaseStudy(matchedCaseStudy.id);
+        }
+      } finally {
+        // Always reset the initial load flag
+        initialLoadRef.current = false;
+      }
+    };
+
+    loadFromURL();
+  }, [searchParams, areas, personas]);
 
   // Update URL when filters change
   const updateURLParams = (
@@ -62,6 +204,8 @@ const LabsPage = () => {
     persona: string,
     caseStudy: string
   ) => {
+    if (initialLoadRef.current) return; // Don't update URL during initial load
+
     const params = new URLSearchParams();
     if (area) params.set("area", area);
     if (topic) params.set("topic", topic);
@@ -74,6 +218,9 @@ const LabsPage = () => {
 
   // Reset topic and case study when area changes
   useEffect(() => {
+    // Skip on first render since we'll handle URL params
+    if (initialLoadRef.current) return;
+
     const newTopic = "";
     const newCaseStudy = "";
     setSelectedTopic(newTopic);
@@ -88,6 +235,9 @@ const LabsPage = () => {
 
   // Update available case studies when topic changes
   useEffect(() => {
+    // Skip on first render since we'll handle URL params
+    if (initialLoadRef.current) return;
+
     if (selectedArea && selectedTopic) {
       const caseStudies = getCaseStudies(selectedArea, selectedTopic);
       setAvailableCaseStudies(caseStudies);
@@ -111,6 +261,9 @@ const LabsPage = () => {
 
   // Update persona selection
   useEffect(() => {
+    // Skip on first render since we'll handle URL params
+    if (initialLoadRef.current) return;
+
     if (selectedPersona) {
       updateURLParams(
         selectedArea,
@@ -123,6 +276,9 @@ const LabsPage = () => {
 
   // Update case study selection
   useEffect(() => {
+    // Skip on first render since we'll handle URL params
+    if (initialLoadRef.current) return;
+
     if (selectedCaseStudy) {
       updateURLParams(
         selectedArea,
@@ -136,6 +292,12 @@ const LabsPage = () => {
   // Filter labs based on selected criteria
   useEffect(() => {
     if (selectedArea && selectedTopic && selectedPersona && selectedCaseStudy) {
+      console.log("Filtering with:", {
+        selectedArea,
+        selectedTopic,
+        selectedPersona,
+        selectedCaseStudy,
+      });
       const result = filterLabs(
         selectedArea,
         selectedTopic,
@@ -166,13 +328,6 @@ const LabsPage = () => {
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
-  };
-
-  const capitalizeFirstLetter = (string: string) => {
-    return string
-      .split(" ")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
   };
 
   return (
@@ -212,7 +367,7 @@ const LabsPage = () => {
           <SelectFilter
             label="Area"
             options={areas.map((area) => capitalizeFirstLetter(area))}
-            value={selectedArea}
+            value={selectedArea ? capitalizeFirstLetter(selectedArea) : ""}
             onChange={setSelectedArea}
             icon={<Search size={18} />}
           />
@@ -228,7 +383,9 @@ const LabsPage = () => {
           <SelectFilter
             label="Persona"
             options={personas.map((persona) => capitalizeFirstLetter(persona))}
-            value={selectedPersona}
+            value={
+              selectedPersona ? capitalizeFirstLetter(selectedPersona) : ""
+            }
             onChange={setSelectedPersona}
             icon={<Search size={18} />}
           />

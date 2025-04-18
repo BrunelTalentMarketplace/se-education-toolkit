@@ -1,2 +1,0 @@
-ADD Testimonials page with students and one sentence long (sliders)
-DEPLOY to vercel
