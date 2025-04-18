@@ -90,7 +90,7 @@ const LabStep: React.FC<LabStepProps> = ({
             </h4>
             <button
               onClick={() => copyToClipboard(prompt)}
-              className="flex items-center gap-1 text-[#FF9933] text-sm hover:text-[#E67300] transition-colors"
+              className="flex items-center gap-1 text-blue-500 text-sm hover:text-blue-600 transition-colors"
             >
               <Copy size={14} />
               Copy

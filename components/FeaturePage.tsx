@@ -21,12 +21,12 @@ export default function FeaturePage() {
       <div className="absolute inset-0 overflow-hidden -z-10">
         <div className="absolute top-0 left-0 w-1/3 h-1/3 bg-blue-400/10 rounded-full filter blur-[80px]" />
         <div className="absolute bottom-0 right-0 w-1/3 h-1/3 bg-purple-400/10 rounded-full filter blur-[80px]" />
-        <div className="absolute top-1/2 right-1/4 w-1/4 h-1/4 bg-[#FF9933]/10 rounded-full filter blur-[80px]" />
+        <div className="absolute top-1/2 right-1/4 w-1/4 h-1/4 bg-blue-500/10 rounded-full filter blur-[80px]" />
       </div>
 
       <div className="max-w-5xl mx-auto w-full">
         <motion.h1
-          className="text-3xl md:text-4xl font-bold text-center mb-12 bg-gradient-to-r from-blue-600 via-[#FF9933] to-purple-600 bg-clip-text text-transparent"
+          className="text-3xl md:text-4xl font-bold text-center mb-12 bg-gradient-to-r from-blue-600 via-blue-500 to-purple-600 bg-clip-text text-transparent"
           initial={{ y: -20, opacity: 0 }}
           animate={isInView ? { y: 0, opacity: 1 } : { y: -20, opacity: 0 }}
           transition={{ duration: 0.5 }}

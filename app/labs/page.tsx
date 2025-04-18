@@ -334,7 +334,7 @@ const LabsPage = () => {
     <main className="min-h-screen flex flex-col items-center relative overflow-hidden px-4 py-16">
       {/* Background elements */}
       <div className="absolute inset-0 overflow-hidden -z-10">
-        <div className="absolute top-1/3 -left-20 w-64 h-64 rounded-full bg-orange-100 opacity-20" />
+        <div className="absolute top-1/3 -left-20 w-64 h-64 rounded-full bg-blue-100 opacity-20" />
         <div className="absolute bottom-20 -right-20 w-80 h-80 rounded-full bg-blue-100 opacity-20" />
         <div className="absolute top-40 right-1/4 w-20 h-20 rounded-full bg-green-100 opacity-30" />
       </div>
@@ -347,7 +347,7 @@ const LabsPage = () => {
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
           transition={{ duration: 0.5 }}
         >
-          <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#FF7733] via-[#FF9933] to-[#FFBB33] bg-clip-text text-transparent">
+          <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 bg-clip-text text-transparent">
             AI-Powered Labs
           </h1>
           <p className="text-gray-600 mt-4 max-w-2xl mx-auto">
@@ -427,7 +427,7 @@ const LabsPage = () => {
               {selectedLab.downloadFile && (
                 <button
                   onClick={() => handleDownload(selectedLab.downloadFile)}
-                  className="flex items-center justify-center gap-2 bg-[#FF9933] hover:bg-[#E67300] text-white font-medium py-2 px-4 rounded-lg transition-colors min-w-40"
+                  className="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors min-w-40"
                 >
                   <Download size={18} />
                   Download Lab Sheet
@@ -456,8 +456,8 @@ const LabsPage = () => {
             transition={{ duration: 0.5 }}
           >
             <div className="flex justify-center mb-6">
-              <div className="p-6 bg-[#FF9933]/10 rounded-full">
-                <Filter size={64} className="text-[#FF9933]" />
+              <div className="p-6 bg-blue-500/10 rounded-full">
+                <Filter size={64} className="text-blue-500" />
               </div>
             </div>
             <h3 className="text-xl font-semibold text-gray-800 mb-2">

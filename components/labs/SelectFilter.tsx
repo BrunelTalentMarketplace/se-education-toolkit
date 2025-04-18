@@ -26,7 +26,7 @@ const SelectFilter: React.FC<SelectFilterProps> = ({
       </label>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between bg-white border border-gray-300 rounded-md px-4 py-2 text-left text-sm focus:outline-none focus:ring-2 focus:ring-[#FF9933] focus:border-transparent"
+        className="w-full flex items-center justify-between bg-white border border-gray-300 rounded-md px-4 py-2 text-left text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
       >
         <span className="flex items-center gap-2">
           {icon}
@@ -53,8 +53,8 @@ const SelectFilter: React.FC<SelectFilterProps> = ({
                     onChange(option);
                     setIsOpen(false);
                   }}
-                  className={`w-full text-left px-4 py-2 text-sm hover:bg-[#FF9933]/10 ${
-                    value === option ? "bg-[#FF9933]/20 font-medium" : ""
+                  className={`w-full text-left px-4 py-2 text-sm hover:bg-blue-100 ${
+                    value === option ? "bg-blue-200 font-medium" : ""
                   }`}
                 >
                   {option}

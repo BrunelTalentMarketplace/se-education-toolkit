@@ -17,7 +17,7 @@ const LandingPage = () => {
       {isMounted && (
         <>
           <motion.div
-            className="absolute top-20 -left-20 w-64 h-64 rounded-full bg-orange-100 opacity-20"
+            className="absolute top-20 -left-20 w-64 h-64 rounded-full bg-blue-100 opacity-20"
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.2 }}
             transition={{ duration: 1.5 }}
@@ -49,7 +49,7 @@ const LandingPage = () => {
             <h1 className="text-3xl md:text-5xl font-semibold text-gray-900 mb-2 leading-tight text-center">
               Revolutionize, Transform, Empower
             </h1>
-            <h2 className="text-2xl md:text-4xl font-bold text-[#FF9933] mb-6 text-center">
+            <h2 className="text-2xl md:text-4xl font-bold text-blue-500 mb-6 text-center">
               Toolkit for Next-Gen SE Curriculum Development
             </h2>
             <p className="text-sm md:text-base text-gray-600 px-4 sm:px-12 md:px-20 text-center max-w-3xl mb-8">
@@ -88,13 +88,13 @@ const LandingPage = () => {
           >
             <button
               onClick={() => router.push("/labs")}
-              className="bg-[#FF9933] text-white px-8 rounded-md text-sm py-2 hover:bg-[#E67300] transition-colors shadow-md"
+              className="bg-blue-500 text-white px-8 rounded-md text-sm py-2 hover:bg-blue-600 transition-colors shadow-md"
             >
               Get Started
             </button>
             <button
               onClick={() => router.push("/about")}
-              className="text-[#FF9933] border border-[#FF9933] px-8 rounded-md text-sm py-2 hover:bg-[#FFC380] hover:text-white transition-colors"
+              className="text-blue-500 border border-blue-500 px-8 rounded-md text-sm py-2 hover:bg-blue-200 hover:text-white transition-colors"
             >
               Learn More
             </button>
