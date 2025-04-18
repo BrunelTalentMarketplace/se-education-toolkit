@@ -20,6 +20,11 @@ body {
   min-height: 100vh;
 }
 
+.glow-text {
+  text-shadow: 0 0 10px rgba(239, 68, 68, 0.7), 0 0 20px rgba(239, 68, 68, 0.5);
+}
+
+
 /* body::before {
   content: "";
   position: absolute;

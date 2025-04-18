@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion } from "motion/react";
 
+
 const AboutPage = () => {
   const [isMounted, setIsMounted] = useState(false);
 
@@ -36,6 +37,12 @@ const AboutPage = () => {
     { label: "Duration", value: "10 hours of participation" },
     { label: "Start Date", value: "April 10, 2025" },
     { label: "Requirements", value: "Currently enrolled in CS or BC courses" },
+    {
+      title: "Research Contribution",
+      description:
+        "Be part of groundbreaking research that shapes the future of software engineering education.",
+      icon: "https://placehold.co/100/FCF4EE/FF9933/png?text=Research&font=montserrat",
+    },
   ];
 
   return (
