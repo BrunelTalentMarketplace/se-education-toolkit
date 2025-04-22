@@ -331,7 +331,7 @@ const LabsPage = () => {
   };
 
   return (
-    <main className="min-h-screen flex flex-col items-center relative overflow-hidden px-4 py-16">
+    <main className="min-h-screen flex flex-col items-center relative overflow-hidden px-4 py-10 sm:py-12 md:py-16">
       {/* Background elements */}
       <div className="absolute inset-0 overflow-hidden -z-10">
         <div className="absolute top-1/3 -left-20 w-64 h-64 rounded-full bg-blue-100 opacity-20" />
@@ -342,15 +342,15 @@ const LabsPage = () => {
       <div ref={ref} className="w-full max-w-6xl mx-auto">
         {/* Header */}
         <motion.div
-          className="text-center mb-12"
+          className="text-center mb-8 sm:mb-10 md:mb-12"
           initial={{ opacity: 0, y: -10 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
           transition={{ duration: 0.5 }}
         >
-          <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 bg-clip-text text-transparent">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 bg-clip-text text-transparent">
             AI-Powered Labs
           </h1>
-          <p className="text-gray-600 mt-4 max-w-2xl mx-auto">
+          <p className="text-sm sm:text-base text-gray-600 mt-3 sm:mt-4 max-w-2xl mx-auto px-2">
             Select your area, topic, persona, and case study to access
             interactive learning materials designed to enhance your software
             engineering skills.
@@ -359,7 +359,7 @@ const LabsPage = () => {
 
         {/* Filters */}
         <motion.div
-          className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8"
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8"
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.5, delay: 0.2 }}
@@ -410,32 +410,35 @@ const LabsPage = () => {
         {/* Lab Content */}
         {selectedLab ? (
           <motion.div
-            className="bg-white/30 backdrop-blur-sm border border-white/20 rounded-xl p-6 shadow-sm"
+            className="bg-white/30 backdrop-blur-sm border border-white/20 rounded-xl p-4 sm:p-5 md:p-6 shadow-sm"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start md:items-center mb-4 sm:mb-6 gap-3 md:gap-4">
               <div>
-                <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-1 sm:mb-2">
                   {selectedLab.title}
                 </h2>
                 {selectedLab.description && (
-                  <p className="text-gray-600">{selectedLab.description}</p>
+                  <p className="text-sm sm:text-base text-gray-600">
+                    {selectedLab.description}
+                  </p>
                 )}
               </div>
               {selectedLab.downloadFile && (
                 <button
                   onClick={() => handleDownload(selectedLab.downloadFile)}
-                  className="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors min-w-40"
+                  className="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-3 sm:px-4 rounded-lg transition-colors min-w-[140px] sm:min-w-[160px] md:min-w-[180px] text-sm sm:text-base whitespace-nowrap"
                 >
-                  <Download size={18} />
+                  <Download size={16} className="hidden sm:inline" />
+                  <Download size={14} className="sm:hidden" />
                   Download Lab Sheet
                 </button>
               )}
             </div>
 
-            <div className="space-y-8">
+            <div className="space-y-6 sm:space-y-8">
               {selectedLab.steps.map((step, index) => (
                 <LabStep
                   key={index}
@@ -450,20 +453,21 @@ const LabsPage = () => {
           </motion.div>
         ) : (
           <motion.div
-            className="bg-white/30 backdrop-blur-sm border border-white/20 rounded-xl p-8 text-center"
+            className="bg-white/30 backdrop-blur-sm border border-white/20 rounded-xl p-6 sm:p-8 text-center"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="flex justify-center mb-6">
-              <div className="p-6 bg-blue-500/10 rounded-full">
-                <Filter size={64} className="text-blue-500" />
+            <div className="flex justify-center mb-4 sm:mb-6">
+              <div className="p-4 sm:p-6 bg-blue-500/10 rounded-full">
+                <Filter size={48} className="sm:hidden text-blue-500" />
+                <Filter size={64} className="hidden sm:block text-blue-500" />
               </div>
             </div>
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">
+            <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2">
               No Lab Selected
             </h3>
-            <p className="text-gray-600">
+            <p className="text-sm sm:text-base text-gray-600">
               Select an area, topic, persona, and case study to view available
               labs.
             </p>
