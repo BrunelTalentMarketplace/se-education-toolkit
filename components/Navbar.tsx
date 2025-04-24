@@ -73,6 +73,12 @@ const Navbar = () => {
                 About
               </Link>
             </li>
+            {/* New Talks tab */}
+            <li>
+              <Link href="/talks" className="hover:underline">
+                Talks
+              </Link>
+            </li>
           </ul>
         </nav>
       </div>
@@ -124,6 +130,16 @@ const Navbar = () => {
                 onClick={toggleMenu}
               >
                 About
+              </Link>
+            </li>
+            {/* New Talks tab for mobile */}
+            <li>
+              <Link
+                href="/talks"
+                className="block px-6 py-3 hover:bg-blue-600"
+                onClick={toggleMenu}
+              >
+                Talks
               </Link>
             </li>
           </ul>
