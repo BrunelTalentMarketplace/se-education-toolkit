@@ -1,319 +1,140 @@
 "use client";
 
-import React, { useState, useEffect, useRef, Suspense } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { motion, useInView } from "framer-motion";
-import Image from "next/image";
-import {
-  Copy,
-  ChevronDown,
-  Search,
-  Clock,
-  Filter,
-  Download,
-} from "lucide-react";
+import { Filter, Download, Search } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import LabStep from "@/components/labs/LabStep";
 import { filterLabs } from "@/lib/lab-utils";
 import { getPersonas } from "@/lib/lab-utils";
 import SelectFilter from "@/components/labs/SelectFilter";
-import {
-  getTopics,
-  getAreas,
-  getCaseStudies,
-  formatTopicForQuery,
-} from "@/lib/lab-utils";
+import { getTopics, getAreas, getCaseStudies } from "@/lib/lab-utils";
 import { Lab, CaseStudy } from "@/data";
-
-// Helper for converting between URL format and internal format
-const convertTopicFromUrl = (urlTopic: string): string => {
-  // Case-insensitive comparison to standard formatted topics
-  if (urlTopic.toLowerCase() === "use cases") return "Use Cases";
-  if (urlTopic.toLowerCase() === "user stories and acceptance criteria")
-    return "User Stories And Acceptance Criteria";
-  return urlTopic;
-};
 
 const LabsPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
-  const initialLoadRef = useRef(true);
 
-  // Initialize state with empty values first
-  const [selectedArea, setSelectedArea] = useState<string>("");
-  const [selectedTopic, setSelectedTopic] = useState<string>("");
-  const [selectedPersona, setSelectedPersona] = useState<string>("");
-  const [selectedCaseStudy, setSelectedCaseStudy] = useState<string>("");
-  const [availableCaseStudies, setAvailableCaseStudies] = useState<CaseStudy[]>(
-    []
-  );
-  const [filteredLabs, setFilteredLabs] = useState<Lab[]>([]);
-  const [selectedLab, setSelectedLab] = useState<Lab | null>(null);
-  const [selectedCaseStudyData, setSelectedCaseStudyData] =
-    useState<CaseStudy | null>(null);
-
-  // Utility function for capitalization
-  const capitalizeFirstLetter = (string: string): string => {
-    return string
+  const capitalizeText = (text: string): string => {
+    return text
       .split(" ")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
       .join(" ");
   };
 
-  // Get filter options
-  const areas = getAreas();
-  const personas = getPersonas();
-  const topics = getTopics(selectedArea);
-
-  // Handle initial URL params
-  useEffect(() => {
-    const loadFromURL = async () => {
-      if (!initialLoadRef.current) return;
-      console.log("Loading from URL params");
-
-      try {
-        // 1. Handle Area
-        const urlArea = searchParams.get("area") || "";
-        if (!urlArea) {
-          initialLoadRef.current = false;
-          return;
-        }
-
-        // Find the proper case version of the area
-        const matchedArea = areas.find(
-          (area) => area.toLowerCase() === urlArea.toLowerCase()
-        );
-
-        if (!matchedArea) {
-          console.log("Could not find matching area for:", urlArea);
-          initialLoadRef.current = false;
-          return;
-        }
-
-        console.log("Setting area:", matchedArea);
-        // Set area with the properly cased version
-        setSelectedArea(matchedArea);
-
-        // 2. Get topics for this area
-        const areaTopics = getTopics(matchedArea);
-        console.log("Available topics:", areaTopics);
-
-        // 3. Handle Topic
-        const urlTopic = searchParams.get("topic") || "";
-        if (!urlTopic) {
-          initialLoadRef.current = false;
-          return;
-        }
-
-        // Convert the URL topic to a standard format first
-        const standardizedTopic = convertTopicFromUrl(urlTopic);
-        console.log("Standardized topic:", standardizedTopic);
-
-        // Then find a match in our available topics
-        const matchedTopic = areaTopics.find(
-          (topic) => topic.toLowerCase() === standardizedTopic.toLowerCase()
-        );
-
-        if (!matchedTopic) {
-          console.log(
-            "Could not find matching topic for:",
-            urlTopic,
-            "standardized as:",
-            standardizedTopic
-          );
-          console.log("Available topics are:", areaTopics);
-          initialLoadRef.current = false;
-          return;
-        }
-
-        console.log("Setting topic:", matchedTopic);
-        setSelectedTopic(matchedTopic);
-
-        // 4. Get case studies - we have an area and topic now
-        const topicCaseStudies = getCaseStudies(matchedArea, matchedTopic);
-        console.log("Available case studies:", topicCaseStudies);
-        setAvailableCaseStudies(topicCaseStudies);
-
-        // 5. Handle Persona
-        const urlPersona = searchParams.get("persona") || "";
-        const matchedPersona = personas.find(
-          (persona) => persona.toLowerCase() === urlPersona.toLowerCase()
-        );
-
-        if (!matchedPersona && urlPersona) {
-          console.log("Could not find matching persona for:", urlPersona);
-          initialLoadRef.current = false;
-          return;
-        }
-
-        if (matchedPersona) {
-          console.log("Setting persona:", matchedPersona);
-          setSelectedPersona(matchedPersona);
-
-          // 6. Handle Case Study
-          const urlCaseStudy = searchParams.get("caseStudy") || "";
-
-          if (!urlCaseStudy) {
-            initialLoadRef.current = false;
-            return;
-          }
-
-          // Try direct match first
-          let matchedCaseStudy = topicCaseStudies.find(
-            (study) => study.id.toLowerCase() === urlCaseStudy.toLowerCase()
-          );
-
-          // If no match, try matching by name (case-insensitive)
-          if (!matchedCaseStudy) {
-            matchedCaseStudy = topicCaseStudies.find(
-              (study) => study.name.toLowerCase() === urlCaseStudy.toLowerCase()
-            );
-          }
-
-          if (!matchedCaseStudy) {
-            console.log(
-              "Could not find matching case study for:",
-              urlCaseStudy
-            );
-            console.log(
-              "Available case studies are:",
-              topicCaseStudies.map((cs) => ({ id: cs.id, name: cs.name }))
-            );
-            initialLoadRef.current = false;
-            return;
-          }
-
-          console.log("Setting case study:", matchedCaseStudy.id);
-          setSelectedCaseStudy(matchedCaseStudy.id);
-        }
-      } finally {
-        // Always reset the initial load flag
-        initialLoadRef.current = false;
-      }
-    };
-
-    loadFromURL();
-  }, [searchParams, areas, personas]);
-
-  // Update URL when filters change
-  const updateURLParams = (
-    area: string,
-    topic: string,
-    persona: string,
-    caseStudy: string
-  ) => {
-    if (initialLoadRef.current) return; // Don't update URL during initial load
-
-    const params = new URLSearchParams();
-    if (area) params.set("area", area);
-    if (topic) params.set("topic", topic);
-    if (persona) params.set("persona", persona);
-    if (caseStudy) params.set("caseStudy", caseStudy);
-
-    // Update URL without refreshing the page
-    router.push(`/labs?${params.toString()}`, { scroll: false });
+  const findMatchingOption = (options: string[], urlValue: string): string => {
+    if (!urlValue) return "";
+    return (
+      options.find(
+        (option) => option.toLowerCase() === urlValue.toLowerCase()
+      ) || ""
+    );
   };
 
-  // Reset topic and case study when area changes
-  useEffect(() => {
-    // Skip on first render since we'll handle URL params
-    if (initialLoadRef.current) return;
+  const areas = useMemo(() => getAreas(), []);
+  const personas = useMemo(() => getPersonas(), []);
 
-    const newTopic = "";
-    const newCaseStudy = "";
-    setSelectedTopic(newTopic);
-    setSelectedCaseStudy(newCaseStudy);
-    setAvailableCaseStudies([]);
+  const selectedArea = findMatchingOption(
+    areas,
+    searchParams.get("area") || ""
+  );
+  const selectedTopic = useMemo(() => {
+    const topics = getTopics(selectedArea);
+    return findMatchingOption(topics, searchParams.get("topic") || "");
+  }, [selectedArea, searchParams]);
 
-    // Update URL
-    if (selectedArea) {
-      updateURLParams(selectedArea, newTopic, selectedPersona, newCaseStudy);
-    }
-  }, [selectedArea]);
+  const explicitPersona = findMatchingOption(
+    personas,
+    searchParams.get("persona") || ""
+  );
+  const explicitCaseStudy = searchParams.get("caseStudy") || "";
 
-  // Update available case studies when topic changes
-  useEffect(() => {
-    // Skip on first render since we'll handle URL params
-    if (initialLoadRef.current) return;
+  const topics = useMemo(() => getTopics(selectedArea), [selectedArea]);
 
+  const availableCaseStudies = useMemo(() => {
     if (selectedArea && selectedTopic) {
-      const caseStudies = getCaseStudies(selectedArea, selectedTopic);
-      setAvailableCaseStudies(caseStudies);
-
-      // Reset case study selection
-      const newCaseStudy = "";
-      setSelectedCaseStudy(newCaseStudy);
-
-      // Update URL
-      updateURLParams(
-        selectedArea,
-        selectedTopic,
-        selectedPersona,
-        newCaseStudy
-      );
-    } else {
-      setAvailableCaseStudies([]);
-      setSelectedCaseStudy("");
+      return getCaseStudies(selectedArea, selectedTopic);
     }
+    return [];
   }, [selectedArea, selectedTopic]);
 
-  // Update persona selection
-  useEffect(() => {
-    // Skip on first render since we'll handle URL params
-    if (initialLoadRef.current) return;
-
-    if (selectedPersona) {
-      updateURLParams(
-        selectedArea,
-        selectedTopic,
-        selectedPersona,
-        selectedCaseStudy
-      );
+  const defaultPersona = useMemo(() => {
+    if (explicitPersona) return explicitPersona;
+    if (selectedArea && selectedTopic && personas.length > 0) {
+      return personas[0];
     }
-  }, [selectedPersona]);
+    return "";
+  }, [explicitPersona, selectedArea, selectedTopic, personas]);
 
-  // Update case study selection
-  useEffect(() => {
-    // Skip on first render since we'll handle URL params
-    if (initialLoadRef.current) return;
-
-    if (selectedCaseStudy) {
-      updateURLParams(
-        selectedArea,
-        selectedTopic,
-        selectedPersona,
-        selectedCaseStudy
-      );
+  const defaultCaseStudy = useMemo(() => {
+    if (explicitCaseStudy) return explicitCaseStudy;
+    if (selectedArea && selectedTopic && availableCaseStudies.length > 0) {
+      return availableCaseStudies[0].id;
     }
-  }, [selectedCaseStudy]);
+    return "";
+  }, [explicitCaseStudy, selectedArea, selectedTopic, availableCaseStudies]);
 
-  // Filter labs based on selected criteria
-  useEffect(() => {
-    if (selectedArea && selectedTopic && selectedPersona && selectedCaseStudy) {
-      console.log("Filtering with:", {
-        selectedArea,
-        selectedTopic,
-        selectedPersona,
-        selectedCaseStudy,
-      });
+  const { filteredLabs, selectedCaseStudyData } = useMemo(() => {
+    if (selectedArea && selectedTopic && defaultPersona && defaultCaseStudy) {
       const result = filterLabs(
         selectedArea,
         selectedTopic,
-        selectedPersona,
-        selectedCaseStudy
+        defaultPersona,
+        defaultCaseStudy
       );
-
-      setFilteredLabs(result.labs);
-      setSelectedCaseStudyData(result.selectedCaseStudy);
-      setSelectedLab(result.labs.length > 0 ? result.labs[0] : null);
-    } else {
-      setFilteredLabs([]);
-      setSelectedLab(null);
-      setSelectedCaseStudyData(null);
+      return {
+        filteredLabs: result.labs,
+        selectedCaseStudyData: result.selectedCaseStudy,
+      };
     }
-  }, [selectedArea, selectedTopic, selectedPersona, selectedCaseStudy]);
+    return { filteredLabs: [], selectedCaseStudyData: null };
+  }, [selectedArea, selectedTopic, defaultPersona, defaultCaseStudy]);
+
+  const selectedLab = filteredLabs.length > 0 ? filteredLabs[0] : null;
+
+  const updateFilters = (updates: Record<string, string>) => {
+    const params = new URLSearchParams();
+
+    const newArea = updates.area !== undefined ? updates.area : selectedArea;
+    const newTopic =
+      updates.topic !== undefined ? updates.topic : selectedTopic;
+    const newPersona =
+      updates.persona !== undefined ? updates.persona : explicitPersona;
+    const newCaseStudy =
+      updates.caseStudy !== undefined ? updates.caseStudy : explicitCaseStudy;
+
+    if (updates.area !== undefined) {
+      if (newArea) params.set("area", newArea.toLowerCase());
+      if (newArea !== selectedArea) {
+        params.delete("topic");
+        params.delete("caseStudy");
+        if (newPersona) params.set("persona", newPersona.toLowerCase());
+      } else {
+        if (newTopic) params.set("topic", newTopic.toLowerCase());
+        if (newPersona) params.set("persona", newPersona.toLowerCase());
+        if (newCaseStudy) params.set("caseStudy", newCaseStudy);
+      }
+    } else if (updates.topic !== undefined) {
+      if (newArea) params.set("area", newArea.toLowerCase());
+      if (newTopic) params.set("topic", newTopic.toLowerCase());
+      if (newTopic !== selectedTopic) {
+        params.delete("caseStudy");
+      } else {
+        if (newCaseStudy) params.set("caseStudy", newCaseStudy);
+      }
+      if (newPersona) params.set("persona", newPersona.toLowerCase());
+    } else {
+      if (newArea) params.set("area", newArea.toLowerCase());
+      if (newTopic) params.set("topic", newTopic.toLowerCase());
+      if (newPersona) params.set("persona", newPersona.toLowerCase());
+      if (newCaseStudy) params.set("caseStudy", newCaseStudy);
+    }
+
+    router.push(`/labs?${params.toString()}`, { scroll: false });
+  };
 
   const handleDownload = (filePath: string | undefined) => {
     if (filePath) {
@@ -332,7 +153,6 @@ const LabsPage = () => {
 
   return (
     <main className="min-h-screen flex flex-col items-center relative overflow-hidden px-4 py-10 sm:py-12 md:py-16">
-      {/* Background elements */}
       <div className="absolute inset-0 overflow-hidden -z-10">
         <div className="absolute top-1/3 -left-20 w-64 h-64 rounded-full bg-blue-100 opacity-20" />
         <div className="absolute bottom-20 -right-20 w-80 h-80 rounded-full bg-blue-100 opacity-20" />
@@ -340,7 +160,6 @@ const LabsPage = () => {
       </div>
 
       <div ref={ref} className="w-full max-w-6xl mx-auto">
-        {/* Header */}
         <motion.div
           className="text-center mb-8 sm:mb-10 md:mb-12"
           initial={{ opacity: 0, y: -10 }}
@@ -351,13 +170,12 @@ const LabsPage = () => {
             AI-Powered Labs
           </h1>
           <p className="text-sm sm:text-base text-gray-600 mt-3 sm:mt-4 max-w-2xl mx-auto px-2">
-            Select your area, topic, persona, and case study to access
-            interactive learning materials designed to enhance your software
-            engineering skills.
+            Select your area and topic to access interactive learning materials.
+            Persona and case study will be automatically selected, but you can
+            customize them if needed.
           </p>
         </motion.div>
 
-        {/* Filters */}
         <motion.div
           className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8"
           initial={{ opacity: 0, y: 20 }}
@@ -366,27 +184,25 @@ const LabsPage = () => {
         >
           <SelectFilter
             label="Area"
-            options={areas.map((area) => capitalizeFirstLetter(area))}
-            value={selectedArea ? capitalizeFirstLetter(selectedArea) : ""}
-            onChange={setSelectedArea}
+            options={areas.map(capitalizeText)}
+            value={selectedArea ? capitalizeText(selectedArea) : ""}
+            onChange={(value) => updateFilters({ area: value })}
             icon={<Search size={18} />}
           />
 
           <SelectFilter
             label="Topic"
-            options={topics}
-            value={selectedTopic}
-            onChange={setSelectedTopic}
+            options={topics.map(capitalizeText)}
+            value={selectedTopic ? capitalizeText(selectedTopic) : ""}
+            onChange={(value) => updateFilters({ topic: value })}
             icon={<Search size={18} />}
           />
 
           <SelectFilter
             label="Persona"
-            options={personas.map((persona) => capitalizeFirstLetter(persona))}
-            value={
-              selectedPersona ? capitalizeFirstLetter(selectedPersona) : ""
-            }
-            onChange={setSelectedPersona}
+            options={personas.map(capitalizeText)}
+            value={defaultPersona ? capitalizeText(defaultPersona) : ""}
+            onChange={(value) => updateFilters({ persona: value })}
             icon={<Search size={18} />}
           />
 
@@ -394,20 +210,19 @@ const LabsPage = () => {
             label="Case Study"
             options={availableCaseStudies.map((study) => study.name)}
             value={
-              selectedCaseStudy
-                ? availableCaseStudies.find((s) => s.id === selectedCaseStudy)
+              defaultCaseStudy
+                ? availableCaseStudies.find((s) => s.id === defaultCaseStudy)
                     ?.name || ""
                 : ""
             }
             onChange={(name) => {
               const study = availableCaseStudies.find((s) => s.name === name);
-              setSelectedCaseStudy(study ? study.id : "");
+              updateFilters({ caseStudy: study ? study.id : "" });
             }}
             icon={<Search size={18} />}
           />
         </motion.div>
 
-        {/* Lab Content */}
         {selectedLab ? (
           <motion.div
             className="bg-white/30 backdrop-blur-sm border border-white/20 rounded-xl p-4 sm:p-5 md:p-6 shadow-sm"
@@ -465,11 +280,11 @@ const LabsPage = () => {
               </div>
             </div>
             <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2">
-              No Lab Selected
+              Select Area and Topic to Get Started
             </h3>
             <p className="text-sm sm:text-base text-gray-600">
-              Select an area, topic, persona, and case study to view available
-              labs.
+              Choose an area and topic to automatically load the first available
+              lab. You can customize the persona and case study afterwards.
             </p>
           </motion.div>
         )}
