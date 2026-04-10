@@ -3,7 +3,7 @@ import { Lab, LabCategory, CaseStudy } from "@/data";
 import { LABS } from "@/data";
 
 export const getAreas = (): string[] => {
-  return [...new Set(LABS.map((lab: LabCategory) => lab.area))];
+  return [...new Set(LABS.map((lab: LabCategory) => lab.area.toLowerCase()))];
 };
 
 export const formatTopicForDisplay = (topic: string): string => {
@@ -25,7 +25,7 @@ export const getTopics = (area: string): string[] => {
 };
 
 export const getPersonas = (): string[] => {
-  return [...new Set(LABS.map((lab: LabCategory) => lab.persona))];
+  return [...new Set(LABS.map((lab: LabCategory) => lab.persona.toLowerCase()))];
 };
 
 export const getCaseStudies = (area: string, topic: string): CaseStudy[] => {

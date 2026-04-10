@@ -10,6 +10,11 @@ interface SelectFilterProps {
   icon?: React.ReactNode;
 }
 
+const capitalizeText = (text: string): string => {
+  if (!text) return text;
+  return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+};
+
 const SelectFilter: React.FC<SelectFilterProps> = ({
   label,
   options,
@@ -45,7 +50,7 @@ const SelectFilter: React.FC<SelectFilterProps> = ({
     };
   }, []);
 
-  const displayValue = value || `Select ${label}`;
+  const displayValue = value ? capitalizeText(value) : `Select ${label}`;
   const isDisabled = options.length === 0;
 
   return (
@@ -95,7 +100,7 @@ const SelectFilter: React.FC<SelectFilterProps> = ({
                       : "text-gray-700"
                   }`}
                 >
-                  {option}
+                  {capitalizeText(option)}
                 </button>
               </li>
             ))}

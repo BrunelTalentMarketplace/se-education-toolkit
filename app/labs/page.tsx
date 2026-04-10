@@ -10,14 +10,6 @@ import { filterLabs } from "@/lib/lab-utils";
 import { getPersonas } from "@/lib/lab-utils";
 import SelectFilter from "@/components/labs/SelectFilter";
 import { getTopics, getAreas, getCaseStudies } from "@/lib/lab-utils";
-import { Lab, CaseStudy } from "@/data";
-
-const capitalizeText = (text: string): string => {
-  return text
-    .split(" ")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join(" ");
-};
 
 const findMatchingOption = (options: string[], urlValue: string): string => {
   if (!urlValue) return "";
@@ -35,22 +27,49 @@ const LabsPage = () => {
   const areas = useMemo(() => getAreas(), []);
   const personas = useMemo(() => getPersonas(), []);
 
-  const selectedArea = findMatchingOption(
-    areas,
-    searchParams.get("area") || ""
-  );
+  const [filters, setFilters] = useState({
+    area: "",
+    topic: "",
+    persona: "",
+    caseStudy: "",
+  });
 
+  const lastParamsRef = useRef<string>("");
+
+  const selectedArea = filters.area;
   const topics = useMemo(() => getTopics(selectedArea), [selectedArea]);
 
-  const selectedTopic = useMemo(() => {
-  return findMatchingOption(topics, searchParams.get("topic") || "");
-}, [topics, searchParams]);
+  useEffect(() => {
+    const currentParams = searchParams.toString();
+    if (currentParams !== lastParamsRef.current) {
+      lastParamsRef.current = currentParams;
+      const urlArea = findMatchingOption(areas, searchParams.get("area") || "");
+      const urlTopic = findMatchingOption(topics, searchParams.get("topic") || "");
+      const urlPersona = findMatchingOption(personas, searchParams.get("persona") || "");
+      const urlCaseStudy = searchParams.get("caseStudy") || "";
+      setFilters((prev) => {
+        if (
+          prev.area !== urlArea ||
+          prev.topic !== urlTopic ||
+          prev.persona !== urlPersona ||
+          prev.caseStudy !== urlCaseStudy
+        ) {
+          return {
+            area: urlArea,
+            topic: urlTopic,
+            persona: urlPersona,
+            caseStudy: urlCaseStudy,
+          };
+        }
+        return prev;
+      });
+    }
+  }, [searchParams, areas, topics, personas]);
 
-  const explicitPersona = findMatchingOption(
-    personas,
-    searchParams.get("persona") || ""
-  );
-  const explicitCaseStudy = searchParams.get("caseStudy") || "";
+
+  const selectedTopic = filters.topic;
+  const explicitPersona = filters.persona;
+  const explicitCaseStudy = filters.caseStudy;
 
 
 
@@ -96,45 +115,39 @@ const LabsPage = () => {
   const selectedLab = filteredLabs.length > 0 ? filteredLabs[0] : null;
 
   const updateFilters = (updates: Record<string, string>) => {
-    const params = new URLSearchParams();
-
-    const newArea = updates.area !== undefined ? updates.area : selectedArea;
-    const newTopic =
-      updates.topic !== undefined ? updates.topic : selectedTopic;
-    const newPersona =
-      updates.persona !== undefined ? updates.persona : explicitPersona;
-    const newCaseStudy =
-      updates.caseStudy !== undefined ? updates.caseStudy : explicitCaseStudy;
-
-    if (updates.area !== undefined) {
-      if (newArea) params.set("area", newArea.toLowerCase());
-      if (newArea !== selectedArea) {
-        params.delete("topic");
-        params.delete("caseStudy");
-        if (newPersona) params.set("persona", newPersona.toLowerCase());
-      } else {
-        if (newTopic) params.set("topic", newTopic.toLowerCase());
-        if (newPersona) params.set("persona", newPersona.toLowerCase());
-        if (newCaseStudy) params.set("caseStudy", newCaseStudy);
+    setFilters((prev) => {
+      const newFilters = { ...prev };
+      if (updates.area !== undefined) {
+        newFilters.area = findMatchingOption(areas, updates.area);
+        if (newFilters.area !== prev.area) {
+          newFilters.topic = "";
+          newFilters.caseStudy = "";
+        }
       }
-    } else if (updates.topic !== undefined) {
-      if (newArea) params.set("area", newArea.toLowerCase());
-      if (newTopic) params.set("topic", newTopic.toLowerCase());
-      if (newTopic !== selectedTopic) {
-        params.delete("caseStudy");
-      } else {
-        if (newCaseStudy) params.set("caseStudy", newCaseStudy);
+      if (updates.topic !== undefined) {
+        newFilters.topic = findMatchingOption(topics, updates.topic);
+        if (newFilters.topic !== prev.topic) {
+          newFilters.caseStudy = "";
+        }
       }
-      if (newPersona) params.set("persona", newPersona.toLowerCase());
-    } else {
-      if (newArea) params.set("area", newArea.toLowerCase());
-      if (newTopic) params.set("topic", newTopic.toLowerCase());
-      if (newPersona) params.set("persona", newPersona.toLowerCase());
-      if (newCaseStudy) params.set("caseStudy", newCaseStudy);
-    }
-
-    router.push(`/labs?${params.toString()}`, { scroll: false });
+      if (updates.persona !== undefined) {
+        newFilters.persona = findMatchingOption(personas, updates.persona);
+      }
+      if (updates.caseStudy !== undefined) {
+        newFilters.caseStudy = updates.caseStudy;
+      }
+      return newFilters;
+    });
   };
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (filters.area) params.set("area", filters.area.toLowerCase());
+    if (filters.topic) params.set("topic", filters.topic.toLowerCase());
+    if (filters.persona) params.set("persona", filters.persona.toLowerCase());
+    if (filters.caseStudy) params.set("caseStudy", filters.caseStudy);
+    router.push(`/labs?${params.toString()}`, { scroll: false });
+  }, [filters, router]);
 
   const handleDownload = (filePath: string | undefined) => {
     if (filePath) {
@@ -184,24 +197,24 @@ const LabsPage = () => {
         >
           <SelectFilter
             label="Area"
-            options={areas.map(capitalizeText)}
-            value={selectedArea ? capitalizeText(selectedArea) : ""}
+            options={areas}
+            value={selectedArea}
             onChange={(value) => updateFilters({ area: value })}
             icon={<Search size={18} />}
           />
 
           <SelectFilter
             label="Topic"
-            options={topics.map(capitalizeText)}
-            value={selectedTopic ? capitalizeText(selectedTopic) : ""}
+            options={topics}
+            value={selectedTopic}
             onChange={(value) => updateFilters({ topic: value })}
             icon={<Search size={18} />}
           />
 
           <SelectFilter
             label="Persona"
-            options={personas.map(capitalizeText)}
-            value={defaultPersona ? capitalizeText(defaultPersona) : ""}
+            options={personas}
+            value={defaultPersona}
             onChange={(value) => updateFilters({ persona: value })}
             icon={<Search size={18} />}
           />
