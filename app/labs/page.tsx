@@ -12,27 +12,25 @@ import SelectFilter from "@/components/labs/SelectFilter";
 import { getTopics, getAreas, getCaseStudies } from "@/lib/lab-utils";
 import { Lab, CaseStudy } from "@/data";
 
+const capitalizeText = (text: string): string => {
+  return text
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
+};
+
+const findMatchingOption = (options: string[], urlValue: string): string => {
+  if (!urlValue) return "";
+  return (
+    options.find((option) => option.toLowerCase() === urlValue.toLowerCase()) || ""
+  );
+};
+
 const LabsPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
-
-  const capitalizeText = (text: string): string => {
-    return text
-      .split(" ")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(" ");
-  };
-
-  const findMatchingOption = (options: string[], urlValue: string): string => {
-    if (!urlValue) return "";
-    return (
-      options.find(
-        (option) => option.toLowerCase() === urlValue.toLowerCase()
-      ) || ""
-    );
-  };
 
   const areas = useMemo(() => getAreas(), []);
   const personas = useMemo(() => getPersonas(), []);
@@ -41,10 +39,12 @@ const LabsPage = () => {
     areas,
     searchParams.get("area") || ""
   );
+
+  const topics = useMemo(() => getTopics(selectedArea), [selectedArea]);
+
   const selectedTopic = useMemo(() => {
-    const topics = getTopics(selectedArea);
-    return findMatchingOption(topics, searchParams.get("topic") || "");
-  }, [selectedArea, searchParams]);
+  return findMatchingOption(topics, searchParams.get("topic") || "");
+}, [topics, searchParams]);
 
   const explicitPersona = findMatchingOption(
     personas,
@@ -52,7 +52,7 @@ const LabsPage = () => {
   );
   const explicitCaseStudy = searchParams.get("caseStudy") || "";
 
-  const topics = useMemo(() => getTopics(selectedArea), [selectedArea]);
+
 
   const availableCaseStudies = useMemo(() => {
     if (selectedArea && selectedTopic) {
