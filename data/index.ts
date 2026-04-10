@@ -58,22 +58,7 @@ const user_story_teacher = [
       "Track your score",
       "Document learned principles",
     ],
-    prompt: `
-                We will work on a problem based on UN SDG #2 (Zero Hunger). 
-                Problem statement:
-                "People in food poverty need access to fresh food in a way that preserves their dignity and avoids excessive bureaucracy."
-                Our primary users are those in food poverty but want to access healthy food without putting their dignity at stake. They require less cumbersome ways to get healthy produce. 
-                As a solution, we want to develop an app that helps people locate fresh produce in their area more easily. In our solution, allotment owners can advertise their excess produce and when and how it can be picked up.  Registered users can browse and check out the produce they like. 
-                We have two personas. 
-                Sarah is a young mother of two who has recently lost her job. She believes buying frozen or fast food is not a matter of ignorance but of being unable to afford "healthy food". She doesn't want to use a food bank because she doesn't want to be seen asking for help.  We will call her our Allotment User.
-                Benjamin has owned an allotment for years, and he has been overproducing. He wants to transform part of his allotment to provide those on benefits, pensioners on state pension and those on a low-income free organic fruit and vegetables. But he doesn't know how to reach those people. We will call him the Allotment Owner.
-                Here is a user story for Allotment User:
-                As an allotment user, I want to create an app account so that I can save my preferences. 
-                Acceptance criteria:
-                Given that the user is on the register page, when the user enters email, password, types of fresh food, and locations to pick up the food from, the user should be registered and directed to the login page. 
-                Given that the user entered a password that doesn't meet password requirements, when the registration button is clicked, the error message "invalid password" is displayed.
-                Given that the user entered an invalid email, when the registration button is clicked, the error message "invalid email" is displayed. 
-`,
+    prompt: null,
   },
   {
     title: "Part 3: Documentation",
@@ -142,12 +127,7 @@ const requirements_engineering_teacher = [
     details: [
       {
         heading: "Provide this use case for analysis",
-        content: `
-    1. User clicks reset password 
-    2. System sends them the link 
-    3. User enters new password 
-    4. System updates the account,
-    `,
+        content: null,
       },
     ],
     prompt: null,
