@@ -186,10 +186,6 @@ Start by welcoming me to the Use Case Detective Game!`;
               `${index + 1}. ${ac.criteria}${index < caseStudy.acceptanceCriteria.length - 1 ? '; ' : ''}`
             ).join('')}
           </p>
-          <p className="text-xs sm:text-sm text-blue-800 mt-2">
-            <span className="font-medium">Teacher: </span>
-            {topic === "user_stories_and_acceptance_criteria" ? "User Story Teacher" : "Requirements Engineering Teacher"}
-          </p>
         </div>
       )}
     </div>
