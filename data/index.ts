@@ -73,7 +73,7 @@ const user_story_teacher = [
   },
 ];
 
-const requirements_engineering_teacher = [
+const use_case_teacher = [
   {
     title: "Part 1: Setup",
     time: 5,
@@ -150,7 +150,7 @@ const DATA = {
     teacher: user_story_teacher,
   },
   requirements_engineering: {
-    teacher: requirements_engineering_teacher,
+    teacher: use_case_teacher,
   },
 };
 
@@ -225,7 +225,7 @@ const requirements_engineering_tutor_lab: Lab = {
   id: "requirements-engineering-tutor",
   title: "Use Case Analysis Practice",
   description: "Learn to analyze and improve use case flows",
-  steps: requirements_engineering_teacher,
+  steps: use_case_teacher,
   downloadFile: "/files/lab-sheets/ReqEngineering-teacher-beginner.html",
 };
 

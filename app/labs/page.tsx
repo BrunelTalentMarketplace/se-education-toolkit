@@ -10,6 +10,7 @@ import { filterLabs } from "@/lib/lab-utils";
 import { getPersonas } from "@/lib/lab-utils";
 import SelectFilter from "@/components/labs/SelectFilter";
 import { getTopics, getAreas, getCaseStudies } from "@/lib/lab-utils";
+import CaseStudyHierarchy from "@/components/labs/CaseStudyHierarchy";
 
 const findMatchingOption = (options: string[], urlValue: string): string => {
   if (!urlValue) return "";
@@ -34,6 +35,12 @@ const LabsPage = () => {
     caseStudy: "",
   });
 
+  const [hierarchySelection, setHierarchySelection] = useState({
+    problemId: "",
+    userStoryId: "",
+    acceptanceCriteriaIds: [] as string[],
+  });
+
   const lastParamsRef = useRef<string>("");
 
   const selectedArea = filters.area;
@@ -47,6 +54,9 @@ const LabsPage = () => {
       const urlTopic = findMatchingOption(topics, searchParams.get("topic") || "");
       const urlPersona = findMatchingOption(personas, searchParams.get("persona") || "");
       const urlCaseStudy = searchParams.get("caseStudy") || "";
+      const urlProblemId = searchParams.get("problemId") || "";
+      const urlUserStoryId = searchParams.get("userStoryId") || "";
+      const urlAcceptanceCriteriaIds = searchParams.get("acceptanceCriteriaIds")?.split(",") || [];
       setFilters((prev) => {
         if (
           prev.area !== urlArea ||
@@ -62,6 +72,11 @@ const LabsPage = () => {
           };
         }
         return prev;
+      });
+      setHierarchySelection({
+        problemId: urlProblemId,
+        userStoryId: urlUserStoryId,
+        acceptanceCriteriaIds: urlAcceptanceCriteriaIds,
       });
     }
   }, [searchParams, areas, topics, personas]);
@@ -112,6 +127,24 @@ const LabsPage = () => {
     return { filteredLabs: [], selectedCaseStudyData: null };
   }, [selectedArea, selectedTopic, defaultPersona, defaultCaseStudy]);
 
+  const selectedHierarchicalData = useMemo(() => {
+    if (!selectedCaseStudyData || !hierarchySelection.problemId || !hierarchySelection.userStoryId || hierarchySelection.acceptanceCriteriaIds.length === 0) return null;
+
+    const problem = selectedCaseStudyData.problem;
+    const userStory = selectedCaseStudyData.userStories.find(us => us.id === hierarchySelection.userStoryId);
+    const acceptanceCriteria = hierarchySelection.acceptanceCriteriaIds
+      .map(id => userStory?.acceptanceCriteria.find(ac => ac.id === id))
+      .filter((ac): ac is AcceptanceCriteria => ac !== undefined);
+
+    if (!userStory || acceptanceCriteria.length === 0) return null;
+
+    return {
+      problem,
+      userStory,
+      acceptanceCriteria,
+    };
+  }, [selectedCaseStudyData, hierarchySelection]);
+
   const selectedLab = filteredLabs.length > 0 ? filteredLabs[0] : null;
 
   const updateFilters = (updates: Record<string, string>) => {
@@ -146,8 +179,11 @@ const LabsPage = () => {
     if (filters.topic) params.set("topic", filters.topic.toLowerCase());
     if (filters.persona) params.set("persona", filters.persona.toLowerCase());
     if (filters.caseStudy) params.set("caseStudy", filters.caseStudy);
+    if (hierarchySelection.problemId) params.set("problemId", hierarchySelection.problemId);
+    if (hierarchySelection.userStoryId) params.set("userStoryId", hierarchySelection.userStoryId);
+    if (hierarchySelection.acceptanceCriteriaIds.length > 0) params.set("acceptanceCriteriaIds", hierarchySelection.acceptanceCriteriaIds.join(","));
     router.push(`/labs?${params.toString()}`, { scroll: false });
-  }, [filters, router]);
+  }, [filters, hierarchySelection, router]);
 
   const handleDownload = (filePath: string | undefined) => {
     if (filePath) {
@@ -162,6 +198,14 @@ const LabsPage = () => {
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
+  };
+
+  const handleHierarchySelectionChange = (selection: {
+    problemId: string;
+    userStoryId: string;
+    acceptanceCriteriaIds: string[];
+  }) => {
+    setHierarchySelection(selection);
   };
 
   return (
@@ -190,7 +234,7 @@ const LabsPage = () => {
         </motion.div>
 
         <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8"
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8"
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.5, delay: 0.2 }}
@@ -218,23 +262,23 @@ const LabsPage = () => {
             onChange={(value) => updateFilters({ persona: value })}
             icon={<Search size={18} />}
           />
-
-          <SelectFilter
-            label="Case Study"
-            options={availableCaseStudies.map((study) => study.name)}
-            value={
-              defaultCaseStudy
-                ? availableCaseStudies.find((s) => s.id === defaultCaseStudy)
-                    ?.name || ""
-                : ""
-            }
-            onChange={(name) => {
-              const study = availableCaseStudies.find((s) => s.name === name);
-              updateFilters({ caseStudy: study ? study.id : "" });
-            }}
-            icon={<Search size={18} />}
-          />
         </motion.div>
+
+        {selectedArea && selectedTopic && (
+          <motion.div
+            className="mb-6 sm:mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            <CaseStudyHierarchy
+              caseStudies={availableCaseStudies}
+              selectedCaseStudyId={defaultCaseStudy}
+              onSelectionChange={handleHierarchySelectionChange}
+              initialSelection={hierarchySelection}
+            />
+          </motion.div>
+        )}
 
         {selectedLab ? (
           <motion.div
@@ -273,8 +317,9 @@ const LabsPage = () => {
                   step={step}
                   index={index}
                   copyToClipboard={copyToClipboard}
-                  caseStudy={index === 1 ? selectedCaseStudyData : null}
+                  caseStudy={index === 1 ? selectedHierarchicalData : null}
                   isSecondStep={index === 1}
+                  topic={selectedTopic}
                 />
               ))}
             </div>

@@ -1,13 +1,19 @@
 import { Copy, Clock } from "lucide-react";
 import { Step } from "@/data/index";
-import { CaseStudy } from "@/data";
+import { Problem, UserStoryExample, AcceptanceCriteria } from "@/data";
+import DATA from "@/data";
 
 interface LabStepProps {
   step: Step;
   index: number;
   copyToClipboard: (text: string) => void;
-  caseStudy?: CaseStudy | null;
+  caseStudy?: {
+    problem: Problem;
+    userStory: UserStoryExample;
+    acceptanceCriteria: AcceptanceCriteria[];
+  } | null;
   isSecondStep?: boolean;
+  topic?: string;
 }
 
 const LabStep: React.FC<LabStepProps> = ({
@@ -16,12 +22,66 @@ const LabStep: React.FC<LabStepProps> = ({
   copyToClipboard,
   caseStudy,
   isSecondStep,
+  topic,
 }) => {
   // Determine prompt source
   const getPrompt = () => {
-    // If this is the second step and we have a case study, use the case study prompt
-    if (isSecondStep && caseStudy) {
-      return caseStudy.prompt;
+    // If this is the second step and we have hierarchical case study data, use appropriate teacher
+    if (isSecondStep && caseStudy && caseStudy.problem && caseStudy.userStory && caseStudy.acceptanceCriteria && caseStudy.acceptanceCriteria.length > 0 && topic) {
+      const { problem, userStory, acceptanceCriteria } = caseStudy;
+
+      // Select teacher based on topic
+      let teacherData;
+      let replacementText = "";
+
+      if (topic === "user_stories_and_acceptance_criteria") {
+        teacherData = DATA.user_story.teacher;
+        replacementText = `Problem statement:
+"${problem.statement}"
+
+${problem.context ? `Context: ${problem.context}` : ''}
+
+Personas:
+${problem.personas.map((persona, i) => `${i + 1}. ${persona.name} (${persona.role}): ${persona.description}`).join('\n')}
+
+Selected User Story:
+"${userStory.statement}"
+
+${userStory.description ? `Description: ${userStory.description}` : ''}
+
+Selected Acceptance Criteria:
+${acceptanceCriteria.map((ac, index) => `${index + 1}. ${ac.criteria}`).join('\n')}
+
+Start by welcoming me to the User Story Wizard Game! Ask to enter a problem statement, proposed solution, personas and at least one user story with its acceptance criteria.`;
+      } else if (topic === "use_cases") {
+        teacherData = DATA.requirements_engineering.teacher;
+        replacementText = `Problem statement:
+"${problem.statement}"
+
+${problem.context ? `Context: ${problem.context}` : ''}
+
+Personas:
+${problem.personas.map((persona, i) => `${i + 1}. ${persona.name} (${persona.role}): ${persona.description}`).join('\n')}
+
+Selected Use Case Scenario:
+"${userStory.statement}"
+
+${userStory.description ? `Description: ${userStory.description}` : ''}
+
+Selected Acceptance Criteria:
+${acceptanceCriteria.map((ac, index) => `${index + 1}. ${ac.criteria}`).join('\n')}
+
+Start by welcoming me to the Use Case Detective Game!`;
+      }
+
+      if (teacherData && teacherData.prompt) {
+        // Replace the ending of the teacher prompt with selected data
+        const endingPattern = topic === "user_stories_and_acceptance_criteria"
+          ? /Start by welcoming me to the User Story Wizard Game! Ask to enter a problem statement, proposed solution, personas and at least one user story with its acceptance criteria\./
+          : /Start by welcoming me to the Use Case Detective Game!/;
+
+        return teacherData.prompt.replace(endingPattern, replacementText);
+      }
     }
     // Otherwise use the step prompt if it exists
     return step.prompt;
@@ -92,7 +152,7 @@ const LabStep: React.FC<LabStepProps> = ({
           <div className="flex justify-between items-center mb-1 sm:mb-2">
             <h4 className="font-medium text-gray-700 text-sm sm:text-base">
               {isSecondStep && caseStudy
-                ? `${caseStudy.name} Prompt`
+                ? `${topic === "user_stories_and_acceptance_criteria" ? "User Story" : "Requirements Engineering"} Teacher Prompt`
                 : "Prompt"}
             </h4>
             <button
@@ -112,9 +172,23 @@ const LabStep: React.FC<LabStepProps> = ({
 
       {isSecondStep && caseStudy && (
         <div className="mt-3 sm:mt-4 p-2 sm:p-3 bg-blue-50 rounded-md">
+          <p className="text-xs sm:text-sm text-blue-800 mb-2">
+            <span className="font-medium">Selected Problem: </span>
+            {caseStudy.problem.statement}
+          </p>
+          <p className="text-xs sm:text-sm text-blue-800 mb-2">
+            <span className="font-medium">Selected {topic === "use_cases" ? "Use Case Scenario" : "User Story"}: </span>
+            {caseStudy.userStory.statement}
+          </p>
           <p className="text-xs sm:text-sm text-blue-800">
-            <span className="font-medium">Case Study: </span>
-            {caseStudy.description}
+            <span className="font-medium">Selected Acceptance Criteria: </span>
+            {caseStudy.acceptanceCriteria.map((ac, index) => 
+              `${index + 1}. ${ac.criteria}${index < caseStudy.acceptanceCriteria.length - 1 ? '; ' : ''}`
+            ).join('')}
+          </p>
+          <p className="text-xs sm:text-sm text-blue-800 mt-2">
+            <span className="font-medium">Teacher: </span>
+            {topic === "user_stories_and_acceptance_criteria" ? "User Story Teacher" : "Requirements Engineering Teacher"}
           </p>
         </div>
       )}
