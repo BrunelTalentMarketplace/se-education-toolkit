@@ -171,11 +171,38 @@ export type Lab = {
   downloadFile?: string;
 };
 
+export type Persona = {
+  name: string;
+  role: string;
+  description: string;
+};
+
+export type AcceptanceCriteria = {
+  id: string;
+  criteria: string; // Given-When-Then format
+};
+
+export type UserStoryExample = {
+  id: string;
+  statement: string; // "As a [persona], I [want to], [so that]"
+  description?: string;
+  acceptanceCriteria: AcceptanceCriteria[];
+};
+
+export type Problem = {
+  id: string;
+  statement: string;
+  description: string;
+  context?: string;
+  personas: Persona[];
+};
+
 export type CaseStudy = {
   id: string;
   name: string;
   description: string;
-  prompt: string;
+  problem: Problem;
+  userStories: UserStoryExample[];
 };
 
 export type LabCategory = {
@@ -202,40 +229,188 @@ const requirements_engineering_tutor_lab: Lab = {
   downloadFile: "/files/lab-sheets/ReqEngineering-teacher-beginner.html",
 };
 
+// Problems
+const foodSharingProblem: Problem = {
+  id: "food-sharing-problem",
+  statement:
+    "People in food poverty need access to fresh food in a way that preserves their dignity and avoids excessive bureaucracy.",
+  description:
+    "An app that helps people locate fresh produce in their area more easily. Allotment owners can advertise their excess produce and when/how it can be picked up. Registered users can browse and check out the produce they like.",
+  context: "UN SDG #2 (Zero Hunger)",
+  personas: [
+    {
+      name: "Sarah",
+      role: "Allotment User",
+      description:
+        "A young mother of two who has recently lost her job. She believes buying frozen or fast food is not a matter of ignorance but of being unable to afford healthy food. She doesn't want to use a food bank because she doesn't want to be seen asking for help.",
+    },
+    {
+      name: "Benjamin",
+      role: "Allotment Owner",
+      description:
+        "Owns an allotment and has been overproducing. Wants to transform part of his allotment to provide those on benefits, pensioners on state pension and those on a low-income free organic fruit and vegetables. But doesn't know how to reach those people.",
+    },
+  ],
+};
+
+const resetPasswordProblem: Problem = {
+  id: "reset-password-problem",
+  statement: "Users need a secure way to reset their forgotten passwords.",
+  description:
+    "A system that allows users to safely reset their account passwords through a secure link and verification process.",
+  personas: [
+    {
+      name: "User",
+      role: "Account Owner",
+      description: "A user who has forgotten their password and needs to regain access.",
+    },
+    {
+      name: "System",
+      role: "Password Manager",
+      description: "The authentication system that validates and updates passwords.",
+    },
+  ],
+};
+
+// Mental Health Problem
+const mentalHealthProblem: Problem = {
+  id: "mental-health-problem",
+  statement:
+    "Young adults aged 18–24 experiencing mental health difficulties need accessible, affordable, and stigma-free support in a way that respects their privacy and removes barriers to seeking help.",
+  description:
+    "An app that tracks users' mood over time and provides personalised resources, peer group chat, and volunteer-led one-to-one support for young adults aged 18–24 who may not otherwise seek professional help.",
+  context: "UN SDG #3 (Good Health and Well-Being)",
+  personas: [
+    {
+      name: "Stephany",
+      role: "App User",
+      description:
+        "A 20-year-old university student who experiences anxiety, low mood, and loneliness. She feels pressure from academic life, compares herself to others on social media, and struggles with self-esteem. She would not visit a GP or therapist due to cost, waiting times, and fear of judgment, but she is open to anonymous digital support that she can access privately on her phone.",
+    },
+    {
+      name: "Marcus",
+      role: "Volunteer Supporter",
+      description:
+        "A 34-year-old qualified counsellor who volunteers a few hours a week to support young people who would never walk into a therapy room. He wants a simple, moderated interface for conducting anonymous one-to-one text sessions without excessive administrative burden.",
+    },
+  ],
+};
+
+// User Story Examples
+const foodSharingUserStories: UserStoryExample[] = [
+  {
+    id: "food-sharing-us-1",
+    statement:
+      "As an allotment user, I want to create an app account so that I can save my preferences",
+    description: "User registration for accessing fresh produce listings and preferences",
+    acceptanceCriteria: [
+      {
+        id: "food-sharing-ac-1-1",
+        criteria:
+          "Given that the user is on the register page, when the user enters email, password, types of fresh food, and locations to pick up the food from, then the user should be registered and directed to the login page",
+      },
+      {
+        id: "food-sharing-ac-1-2",
+        criteria:
+          "Given that the user entered a password that doesn't meet password requirements, when the registration button is clicked, then the error message 'invalid password' is displayed",
+      },
+      {
+        id: "food-sharing-ac-1-3",
+        criteria:
+          "Given that the user entered an invalid email, when the registration button is clicked, then the error message 'invalid email' is displayed",
+      },
+    ],
+  },
+];
+
+const resetPasswordUserStories: UserStoryExample[] = [
+  {
+    id: "reset-password-us-1",
+    statement:
+      "As a user, I want to reset my forgotten password so that I can regain access to my account",
+    acceptanceCriteria: [
+      {
+        id: "reset-password-ac-1-1",
+        criteria:
+          "Given that the user is on the login page, when the user clicks the reset password link, then the system sends a password reset link to their email",
+      },
+      {
+        id: "reset-password-ac-1-2",
+        criteria:
+          "Given that the user received the reset link, when the user enters a new password, then the system validates and updates the account password",
+      },
+      {
+        id: "reset-password-ac-1-3",
+        criteria:
+          "Given that the reset link has expired, when the user tries to use it, then the system displays an error message and prompts to request a new link",
+      },
+    ],
+  },
+];
+
+// Mental Health User Stories
+const mentalHealthUserStories: UserStoryExample[] = [
+  {
+    id: "mental-health-us-1",
+    statement:
+      "As a user, I want to be given advice on how to feel better through personal goals and access my previously achieved goals to view my progress",
+    description: "Personal goal setting and progress tracking for mental health improvement",
+    acceptanceCriteria: [
+      {
+        id: "mental-health-ac-1-1",
+        criteria:
+          "Given that the user has completed a mood check-in, when the check-in is submitted, the app should display a set of personalised goal suggestions based on the user's current mood score",
+      },
+      {
+        id: "mental-health-ac-1-2",
+        criteria:
+          "Given that the user is viewing their suggested goals, when the user selects a goal and taps 'Set as my goal', the goal should be saved and displayed on the user's goals dashboard as active",
+      },
+      {
+        id: "mental-health-ac-1-3",
+        criteria:
+          "Given that the user has marked a goal as complete, when the user navigates to the progress section, the completed goal should appear in a 'Goals achieved' list with the date it was completed",
+      },
+      {
+        id: "mental-health-ac-1-4",
+        criteria:
+          "Given that the user has no previously completed goals, when the user navigates to the progress section, the message 'No goals completed yet — keep going!' should be displayed",
+      },
+      {
+        id: "mental-health-ac-1-5",
+        criteria:
+          "Given that the user taps on a previously achieved goal, when the goal detail view opens, the user should be shown the goal description and the date it was completed",
+      },
+    ],
+  },
+];
+
 // Case Studies
 const foodSharingCaseStudy: CaseStudy = {
   id: "food-sharing",
   name: "Food Sharing App",
   description:
     "An app that connects people in food poverty with allotment owners who have excess produce.",
-  prompt: `
-    We will work on a problem based on UN SDG #2 (Zero Hunger). 
-    Problem statement:
-    "People in food poverty need access to fresh food in a way that preserves their dignity and avoids excessive bureaucracy."
-    Our primary users are those in food poverty but want to access healthy food without putting their dignity at stake. They require less cumbersome ways to get healthy produce. 
-    As a solution, we want to develop an app that helps people locate fresh produce in their area more easily. In our solution, allotment owners can advertise their excess produce and when and how it can be picked up.  Registered users can browse and check out the produce they like. 
-    We have two personas. 
-    Sarah is a young mother of two who has recently lost her job. She believes buying frozen or fast food is not a matter of ignorance but of being unable to afford "healthy food". She doesn't want to use a food bank because she doesn't want to be seen asking for help.  We will call her our Allotment User.
-    Benjamin has owned an allotment for years, and he has been overproducing. He wants to transform part of his allotment to provide those on benefits, pensioners on state pension and those on a low-income free organic fruit and vegetables. But he doesn't know how to reach those people. We will call him the Allotment Owner.
-    Here is a user story for Allotment User:
-    As an allotment user, I want to create an app account so that I can save my preferences. 
-    Acceptance criteria:
-    Given that the user is on the register page, when the user enters email, password, types of fresh food, and locations to pick up the food from, the user should be registered and directed to the login page. 
-    Given that the user entered a password that doesn't meet password requirements, when the registration button is clicked, the error message "invalid password" is displayed.
-    Given that the user entered an invalid email, when the registration button is clicked, the error message "invalid email" is displayed.
-  `,
+  problem: foodSharingProblem,
+  userStories: foodSharingUserStories,
 };
 
 const resetPasswordCaseStudy: CaseStudy = {
   id: "reset-password",
   name: "Reset Password",
   description: "A system to reset a user's password.",
-  prompt: `
-    1. User clicks reset password 
-    2. System sends them the link 
-    3. User enters new password 
-    4. System updates the account,
-  `,
+  problem: resetPasswordProblem,
+  userStories: resetPasswordUserStories,
+};
+
+// Mental Health Case Study
+const mentalHealthCaseStudy: CaseStudy = {
+  id: "mental-health-assistance",
+  name: "Mental Health Assistance App",
+  description:
+    "An app that tracks users' mood over time and provides personalised resources, peer group chat, and volunteer-led one-to-one support for young adults aged 18–24 who may not otherwise seek professional help.",
+  problem: mentalHealthProblem,
+  userStories: mentalHealthUserStories,
 };
 
 export const LABS: LabCategory[] = [
@@ -244,7 +419,7 @@ export const LABS: LabCategory[] = [
     topic: "user_stories_and_acceptance_criteria",
     persona: "tutor",
     labs: [user_story_tutor_lab],
-    caseStudies: [foodSharingCaseStudy],
+    caseStudies: [foodSharingCaseStudy, mentalHealthCaseStudy],
   },
   {
     area: "requirements engineering",
