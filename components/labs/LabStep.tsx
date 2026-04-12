@@ -1,7 +1,7 @@
-import { Copy, Clock } from "lucide-react";
+import { Copy, Clock, Check } from "lucide-react";
+import { useState } from "react";
 import { Step } from "@/data/index";
 import { Problem, UserStoryExample, AcceptanceCriteria } from "@/data";
-import DATA from "@/data";
 
 interface LabStepProps {
   step: Step;
@@ -24,67 +24,23 @@ const LabStep: React.FC<LabStepProps> = ({
   isSecondStep,
   topic,
 }) => {
-  // Determine prompt source
+  const [copied, setCopied] = useState(false);
+  const [copiedSummary, setCopiedSummary] = useState(false);
+
+  const handleCopy = (text: string) => {
+    copyToClipboard(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleCopySummary = (text: string) => {
+    copyToClipboard(text);
+    setCopiedSummary(true);
+    setTimeout(() => setCopiedSummary(false), 2000);
+  };
+
   const getPrompt = () => {
-    // If this is the second step and we have hierarchical case study data, use appropriate teacher
-    if (isSecondStep && caseStudy && caseStudy.problem && caseStudy.userStory && caseStudy.acceptanceCriteria && caseStudy.acceptanceCriteria.length > 0 && topic) {
-      const { problem, userStory, acceptanceCriteria } = caseStudy;
-
-      // Select teacher based on topic
-      let teacherData;
-      let replacementText = "";
-
-      if (topic === "user_stories_and_acceptance_criteria") {
-        teacherData = DATA.user_story.teacher;
-        replacementText = `Problem statement:
-"${problem.statement}"
-
-${problem.context ? `Context: ${problem.context}` : ''}
-
-Personas:
-${problem.personas.map((persona, i) => `${i + 1}. ${persona.name} (${persona.role}): ${persona.description}`).join('\n')}
-
-Selected User Story:
-"${userStory.statement}"
-
-${userStory.description ? `Description: ${userStory.description}` : ''}
-
-Selected Acceptance Criteria:
-${acceptanceCriteria.map((ac, index) => `${index + 1}. ${ac.criteria}`).join('\n')}
-
-Start by welcoming me to the User Story Wizard Game! Ask to enter a problem statement, proposed solution, personas and at least one user story with its acceptance criteria.`;
-      } else if (topic === "use_cases") {
-        teacherData = DATA.requirements_engineering.teacher;
-        replacementText = `Problem statement:
-"${problem.statement}"
-
-${problem.context ? `Context: ${problem.context}` : ''}
-
-Personas:
-${problem.personas.map((persona, i) => `${i + 1}. ${persona.name} (${persona.role}): ${persona.description}`).join('\n')}
-
-Selected Use Case Scenario:
-"${userStory.statement}"
-
-${userStory.description ? `Description: ${userStory.description}` : ''}
-
-Selected Acceptance Criteria:
-${acceptanceCriteria.map((ac, index) => `${index + 1}. ${ac.criteria}`).join('\n')}
-
-Start by welcoming me to the Use Case Detective Game!`;
-      }
-
-      if (teacherData && teacherData.prompt) {
-        // Replace the ending of the teacher prompt with selected data
-        const endingPattern = topic === "user_stories_and_acceptance_criteria"
-          ? /Start by welcoming me to the User Story Wizard Game! Ask to enter a problem statement, proposed solution, personas and at least one user story with its acceptance criteria\./
-          : /Start by welcoming me to the Use Case Detective Game!/;
-
-        return teacherData.prompt.replace(endingPattern, replacementText);
-      }
-    }
-    // Otherwise use the step prompt if it exists
-    return step.prompt;
+    return step.prompt?.replace("{{CASE_STUDY_DATA}}", "") ?? null;
   };
 
   const prompt = getPrompt();
@@ -156,12 +112,22 @@ Start by welcoming me to the Use Case Detective Game!`;
                 : "Prompt"}
             </h4>
             <button
-              onClick={() => copyToClipboard(prompt)}
-              className="flex items-center gap-1 text-blue-500 text-xs sm:text-sm hover:text-blue-600 transition-colors"
+              onClick={() => handleCopy(prompt)}
+              className="flex items-center gap-1 text-xs sm:text-sm transition-colors text-blue-500 hover:text-blue-600"
             >
-              <Copy size={12} className="sm:hidden" />
-              <Copy size={14} className="hidden sm:block" />
-              Copy
+              {copied ? (
+                <>
+                  <Check size={12} className="sm:hidden" />
+                  <Check size={14} className="hidden sm:block" />
+                  Copied!
+                </>
+              ) : (
+                <>
+                  <Copy size={12} className="sm:hidden" />
+                  <Copy size={14} className="hidden sm:block" />
+                  Copy
+                </>
+              )}
             </button>
           </div>
           <div className="bg-gray-50 p-2 sm:p-3 rounded-md text-xs sm:text-sm text-gray-700 whitespace-pre-line overflow-auto max-h-48 sm:max-h-64">
@@ -171,21 +137,85 @@ Start by welcoming me to the Use Case Detective Game!`;
       )}
 
       {isSecondStep && caseStudy && (
-        <div className="mt-3 sm:mt-4 p-2 sm:p-3 bg-blue-50 rounded-md">
-          <p className="text-xs sm:text-sm text-blue-800 mb-2">
-            <span className="font-medium">Selected Problem: </span>
-            {caseStudy.problem.statement}
-          </p>
-          <p className="text-xs sm:text-sm text-blue-800 mb-2">
-            <span className="font-medium">Selected {topic === "use_cases" ? "Use Case Scenario" : "User Story"}: </span>
-            {caseStudy.userStory.statement}
-          </p>
-          <p className="text-xs sm:text-sm text-blue-800">
-            <span className="font-medium">Selected Acceptance Criteria: </span>
-            {caseStudy.acceptanceCriteria.map((ac, index) => 
-              `${index + 1}. ${ac.criteria}${index < caseStudy.acceptanceCriteria.length - 1 ? '; ' : ''}`
-            ).join('')}
-          </p>
+        <div className="mt-3 sm:mt-4 bg-blue-50 rounded-md overflow-hidden">
+          <div className="flex justify-between items-center px-2 sm:px-3 pt-2 sm:pt-3 mb-2">
+            <h4 className="font-medium text-gray-700 text-sm sm:text-base">Selected Context</h4>
+            <button
+              onClick={() => {
+                const { problem, userStory, acceptanceCriteria } = caseStudy;
+                const lines = [
+                  `Problem Statement: ${problem.statement}`,
+                  ...(problem.description ? [`Description: ${problem.description}`] : []),
+                  ...(problem.context ? [`Context: ${problem.context}`] : []),
+                  ...(problem.personas.length > 0
+                    ? [`Personas:\n${problem.personas.map((p, i) => `${i + 1}. ${p.name} (${p.role}): ${p.description}`).join("\n")}`]
+                    : []),
+                  `Selected ${topic === "use_cases" ? "Use Case Scenario" : "User Story"}: ${userStory.statement}`,
+                  `Selected Acceptance Criteria:\n${acceptanceCriteria.map((ac, i) => `${i + 1}. ${ac.criteria}`).join("\n")}`,
+                ];
+                handleCopySummary(lines.join("\n\n"));
+              }}
+              className="flex items-center gap-1 text-xs sm:text-sm transition-colors text-blue-500 hover:text-blue-600"
+            >
+              {copiedSummary ? (
+                <>
+                  <Check size={12} className="sm:hidden" />
+                  <Check size={14} className="hidden sm:block" />
+                  Copied!
+                </>
+              ) : (
+                <>
+                  <Copy size={12} className="sm:hidden" />
+                  <Copy size={14} className="hidden sm:block" />
+                  Copy
+                </>
+              )}
+            </button>
+          </div>
+          <div className="px-2 sm:px-3 pb-2 sm:pb-3 space-y-2">
+            <div>
+              <p className="text-xs sm:text-sm text-blue-800 font-medium mb-0.5">Problem Statement:</p>
+              <p className="text-xs sm:text-sm text-blue-800">{caseStudy.problem.statement}</p>
+            </div>
+            {caseStudy.problem.description && (
+              <div>
+                <p className="text-xs sm:text-sm text-blue-800 font-medium mb-0.5">Description:</p>
+                <p className="text-xs sm:text-sm text-blue-800">{caseStudy.problem.description}</p>
+              </div>
+            )}
+            {caseStudy.problem.context && (
+              <div>
+                <p className="text-xs sm:text-sm text-blue-800 font-medium mb-0.5">Context:</p>
+                <p className="text-xs sm:text-sm text-blue-800">{caseStudy.problem.context}</p>
+              </div>
+            )}
+            {caseStudy.problem.personas.length > 0 && (
+              <div>
+                <p className="text-xs sm:text-sm text-blue-800 font-medium mb-0.5">Personas:</p>
+                <ul className="space-y-1">
+                  {caseStudy.problem.personas.map((persona, i) => (
+                    <li key={i} className="text-xs sm:text-sm text-blue-800">
+                      <span className="font-medium">{persona.name}</span> ({persona.role}): {persona.description}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            <div>
+              <p className="text-xs sm:text-sm text-blue-800 font-medium mb-0.5">
+                Selected {topic === "use_cases" ? "Use Case Scenario" : "User Story"}:
+              </p>
+              <p className="text-xs sm:text-sm text-blue-800">{caseStudy.userStory.statement}</p>
+            </div>
+            <div>
+              <p className="text-xs sm:text-sm text-blue-800 font-medium mb-0.5">Selected Acceptance Criteria:</p>
+              <ul className="space-y-0.5">
+                {caseStudy.acceptanceCriteria.map((ac, i) => (
+                  <li key={i} className="text-xs sm:text-sm text-blue-800">{i + 1}. {ac.criteria}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
         </div>
       )}
     </div>

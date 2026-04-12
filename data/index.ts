@@ -1,14 +1,9 @@
-import gamesData from './games.json';
 import areasData from './lab-data.json';
 
-// Derive area type from JSON
-export type Area = typeof areasData.areas[number]['name']; // Union of area names
-
-// Derive topic type from JSON (all possible topics across areas)
-export type Topic = typeof areasData.areas[number]['topics'][number]; // Union of all topics
-
-// Derive persona type from JSON
-export type PersonaType = typeof areasData.personas[number]; // Union of personas
+// Types derived from JSON shape
+export type Area = typeof areasData.areas[number]['name'];
+export type Topic = typeof areasData.areas[number]['topics'][number];
+export type PersonaType = typeof areasData.personas[number];
 
 export type Step = {
   title: string;
@@ -43,7 +38,7 @@ export type AcceptanceCriteria = {
 
 export type UserStoryExample = {
   id: string;
-  problemId?: string; // Added for linking to problems
+  problemId?: string;
   statement: string;
   description?: string;
   acceptanceCriteria: AcceptanceCriteria[];
@@ -65,74 +60,6 @@ export type CaseStudy = {
   userStories: UserStoryExample[];
 };
 
-// Load games from JSON
-export const GAMES: Lab[] = gamesData.games as Lab[];
-
-// Load problems from JSON
-export const PROBLEMS: Problem[] = areasData.problems as Problem[];
-
-// Load user stories from JSON
-export const USER_STORIES: UserStoryExample[] = areasData.userStories as UserStoryExample[];
-
-// Helper functions to fetch data dynamically
-export const getGameByFilters = (
-  area: string,
-  topic: string,
-  persona: string
-): Lab[] => {
-  return GAMES.filter(
-    (game) =>
-      game.area === area &&
-      game.topic === topic &&
-      game.persona === persona
-  );
-};
-
-export const getGameById = (id: string): Lab | undefined => {
-  return GAMES.find((game) => game.id === id);
-};
-
-// Helper to get topics for a specific area
-export const getTopicsForArea = (area: Area): Topic[] => {
-  const areaData = areasData.areas.find(a => a.name === area);
-  return areaData ? areaData.topics : [];
-};
-
-// Helper to get a problem by ID
-export const getProblemById = (id: string): Problem | undefined => {
-  return PROBLEMS.find((problem) => problem.id === id);
-};
-
-// Helper to get user stories by IDs
-export const getUserStoriesByIds = (ids: string[]): UserStoryExample[] => {
-  return USER_STORIES.filter((us) => ids.includes(us.id));
-};
-
-// Case Studies (now using dynamic data)
-const foodSharingCaseStudy: CaseStudy = {
-  id: "food-sharing",
-  name: "Food Sharing App",
-  description: "An app that connects people in food poverty with allotment owners who have excess produce.",
-  problem: getProblemById("food-sharing-problem")!,
-  userStories: getUserStoriesByIds(["food-sharing-us-1"]),
-};
-
-const resetPasswordCaseStudy: CaseStudy = {
-  id: "reset-password",
-  name: "Reset Password",
-  description: "A system to reset a user's password.",
-  problem: getProblemById("reset-password-problem")!,
-  userStories: getUserStoriesByIds(["reset-password-us-1"]),
-};
-
-const mentalHealthCaseStudy: CaseStudy = {
-  id: "mental-health-assistance",
-  name: "Mental Health Assistance App",
-  description: "An app that tracks users' mood over time and provides personalised resources, peer group chat, and volunteer-led one-to-one support for young adults aged 18–24 who may not otherwise seek professional help.",
-  problem: getProblemById("mental-health-problem")!,
-  userStories: getUserStoriesByIds(["mental-health-us-1"]),
-};
-
 export type LabCategory = {
   area: string;
   topic: string;
@@ -141,34 +68,82 @@ export type LabCategory = {
   caseStudies: CaseStudy[];
 };
 
-export const LABS: LabCategory[] = [
-  {
-    area: "requirements engineering",
-    topic: "user_stories_and_acceptance_criteria",
-    persona: "tutor",
-    labs: getGameByFilters("requirements engineering", "user_stories_and_acceptance_criteria", "tutor"),
-    caseStudies: [foodSharingCaseStudy, mentalHealthCaseStudy],
-  },
-  {
-    area: "requirements engineering",
-    topic: "use_cases",
-    persona: "tutor",
-    labs: getGameByFilters("requirements engineering", "use_cases", "tutor"),
-    caseStudies: [resetPasswordCaseStudy],
-  },
-];
+// Internal type for the raw JSON shape of a case study definition
+type CaseStudyDef = {
+  id: string;
+  name: string;
+  description: string;
+  topics: string[];
+  problemId: string;
+  userStoryIds: string[];
+};
 
-// Define CASE_STUDIES as an array
-export const CASE_STUDIES: CaseStudy[] = [
-  foodSharingCaseStudy,
-  resetPasswordCaseStudy,
-  mentalHealthCaseStudy,
-];
+// Raw arrays loaded directly from JSON
+export const GAMES: Lab[] = areasData.labs as Lab[];
+export const PROBLEMS: Problem[] = areasData.problems as Problem[];
+export const USER_STORIES: UserStoryExample[] = areasData.userStories as UserStoryExample[];
+export const AREAS: Area[] = areasData.areas.map((a) => a.name);
+export const PERSONAS: PersonaType[] = areasData.personas;
+
+// Lookup helpers
+export const getGameById = (id: string): Lab | undefined =>
+  GAMES.find((g) => g.id === id);
+
+export const getGameByFilters = (area: string, topic: string, persona: string): Lab[] =>
+  GAMES.filter((g) => g.area === area && g.topic === topic && g.persona === persona);
+
+export const getTopicsForArea = (area: Area): Topic[] =>
+  areasData.areas.find((a) => a.name === area)?.topics ?? [];
+
+export const getProblemById = (id: string): Problem | undefined =>
+  PROBLEMS.find((p) => p.id === id);
+
+export const getUserStoriesByIds = (ids: string[]): UserStoryExample[] =>
+  USER_STORIES.filter((us) => ids.includes(us.id));
+
+// Build CaseStudy objects from JSON definitions.
+// Skips any entry whose problemId doesn't resolve, and warns rather than crashing.
+const rawCaseStudies = areasData.caseStudies as CaseStudyDef[];
+
+export const CASE_STUDIES: CaseStudy[] = rawCaseStudies.reduce<CaseStudy[]>((acc, def) => {
+  const problem = PROBLEMS.find((p) => p.id === def.problemId);
+  if (!problem) {
+    console.warn(`CaseStudy "${def.id}": problem "${def.problemId}" not found — skipping.`);
+    return acc;
+  }
+  acc.push({
+    id: def.id,
+    name: def.name,
+    description: def.description,
+    problem,
+    userStories: getUserStoriesByIds(def.userStoryIds),
+  });
+  return acc;
+}, []);
+
+// Build LABS by deriving the topic → case study association from JSON.
+// One LabCategory per (area, topic, persona) combination that has at least one game.
+export const LABS: LabCategory[] = areasData.areas.flatMap((area) =>
+  area.topics.flatMap((topic) => {
+    const personas = [
+      ...new Set(
+        GAMES.filter((g) => g.area === area.name && g.topic === topic).map((g) => g.persona)
+      ),
+    ];
+    if (personas.length === 0) return [];
+
+    const caseStudies = CASE_STUDIES.filter((cs) =>
+      rawCaseStudies.find((def) => def.id === cs.id)?.topics.includes(topic)
+    );
+
+    return personas.map((persona) => ({
+      area: area.name,
+      topic,
+      persona,
+      labs: getGameByFilters(area.name, topic, persona),
+      caseStudies,
+    }));
+  })
+);
 
 export default { GAMES, CASE_STUDIES };
-
-// Export areas for use elsewhere
-export const AREAS: Area[] = areasData.areas.map(a => a.name);
-
-// Export personas for use elsewhere
-export const PERSONAS: PersonaType[] = areasData.personas;

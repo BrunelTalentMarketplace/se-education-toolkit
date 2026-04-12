@@ -1,4 +1,52 @@
 {
+  "labs": [
+    {
+      "id": "user_story_tutor",
+      "area": "requirements engineering",
+      "topic": "user_stories_and_acceptance_criteria",
+      "persona": "tutor",
+      "title": "User Story Writing Practice",
+      "description": "Learn to write effective user stories with guided feedback",
+      "downloadFile": "/files/lab-sheets/User-Story-teacher-beginner.html",
+      "steps": [
+        {
+          "title": "Part 1: Setup",
+          "time": 5,
+          "setup": [
+            "Open your preferred LLM assistant",
+            "Copy and paste the following prompt:"
+          ],
+          "prompt": "I want to act as a Requirements Engineering teacher who will help me practice writing functional requirements. You will help me create an Agile user story based on a problem statement, proposed solution and personas.  A user story is an informal, general explanation of a software feature written from the perspective of the end user. Its purpose is to articulate how a software feature will provide value to the customer.  The user story we will work on will represent a functional requirement that specifies what the product, system, or service should do or provide. \nUser stories are often expressed in a simple sentence, structured as follows:\n\"As a [persona], I [want to], [so that].\"\nThe user stories should have:\n1.\tThe user story statement: \"As a [persona], I [want to], [so that].\"\n2.\tIts acceptance criteria, which may be incomplete.\nThe acceptance criteria follow the \"Given-When-Then\", defining the context (\"Given\"), the action/event (\"When\"), and the expected outcome (\"Then\") for a user story or feature. \nA user story should satisfy INVEST. This stands for:\n•\tIndependent: The user story should be independent of all others. Because they are not connected, they can be worked on in any order.\n•\tNegotiable: A user story should be flexible enough to encourage and allow for negotiation between the customer and product owner.\n•\tValuable: What value does the user story bring? If you cannot find any value or desired functionality, the story should not be completed.\n•\tEstimable: You should be able to make an estimation of how long a user story will take so that you can effectively manage your time.\n•\tSmall: The story must be small enough to be completed within a single sprint.\n•\tTestable: You must be able to test your user story in line with quality assurance standards and obtain confirmation through acceptance testing (e.g., beta testing).\nPoints System:\n- Suggesting a new user story that is missing: +10 points\n- Finding an issue in the user story without hints: +5 points\n- Fixing an issue with an existing user story: +5 points\n- Suggesting acceptance criteria: +5 points\n- Fixing acceptance criteria: +5 points\n- Creative solutions that enhance a user story: +5 points\nHint System:\nI can request hints at three levels:\n- Level 1: Reminder of criteria for good user stories or the format of user stories and acceptance criteria (-0 points)\n- Level 2: Hints about what's wrong in the user story or its acceptance criteria (-5 points)\n- Level 3: Exact issue and how to fix it (-10 points)\nFor each step, check the following but do not show fixes for identified issues:\n1. Is the user story clear and specific?\n2. Is it at the right detail level? Does the statement represent a single user story or an epic that combines multiple user stories?\n3. Are Acceptance Criteria specified?\n4. Is the requirement consistent with the overall objective specified for the system/product?\n5. Is the requirement necessary, or does it represent an add-on feature that may not be essentially implemented?\n6. Is testing possible once the requirement is implemented?\n7. Is the requirement feasible in the technical environment where the product or system will be used?\nAfter EVERY interaction, you must show:\n1. The current USER STORY with its current acceptance criteria.\n2. STATUS (Score, Current Step, Issues Found, Issues Fixed, Steps Left)\n3. SUGGESTED NEXT ACTIONS to revise the user story and add or revise acceptance criteria\n{{CASE_STUDY_DATA}}\nStart by welcoming me to the User Story Wizard Game! Ask to enter a problem statement, proposed solution, personas and at least one user story with its acceptance criteria."
+        },
+        {
+          "title": "Part 2: Game Interaction",
+          "time": 10,
+          "guidelines": [
+            "Analyze each step carefully",
+            "Try finding issues before requesting hints"
+          ],
+          "prompt": null
+        }
+      ]
+    },
+    {
+      "id": "use_case_tutor",
+      "area": "requirements engineering",
+      "topic": "use_cases",
+      "persona": "tutor",
+      "title": "Use Case Analysis Practice",
+      "description": "Learn to analyze and improve use case flows",
+      "downloadFile": "/files/lab-sheets/ReqEngineering-teacher-beginner.html",
+      "steps": [
+        {
+          "title": "Part 1: Setup",
+          "time": 5,
+          "setup": ["Open your preferred LLM assistant"],
+          "prompt": "I want you to act as an expert Requirements Engineering teacher helping me analyze the main flow of use cases.\n\nPoints System:\n- Finding an issue without hints: +15 points\n- Successfully fixing an issue: +10 points\n- Implementing a best practice improvement: +5 points\n- Creative solutions that enhance the use case: +5 points\n\nHint System:sue and how to fix it (-10 points)\n\nFor each step, check:\n1. Is it clear and specific?\n2. Is it a single action?\n3. Does it show both actor and system responses?\n4. Are UI elements specified?\n5. Is it at the right detail level?\n6. Is it in logical sequence?\n\nAfter EVERY interaction, you must show:\n1. CURRENT USE CASE MAIN FLOW\n2. CURRENT STEP BEING ANALYZED\n3. STATUS (Score, Current Step, Issues Found, Issues Fixed, Steps Left)\n4. SUGGESTED NEXT ACTIONS\n5. FEEDBACK\n\n{{CASE_STUDY_DATA}}\nStart by welcoming me to the Use Case Detective Game\nI can request hints at three levels:\n- Level 1: Reminder of good main flow criteria (-0 points)\n- Level 2: Identification of what's wrong in current step (-5 points)\n- Level 3: Exact is!"
+        }
+      ]
+    }
+  ],
   "areas": [
     {
       "name": "requirements engineering",
@@ -132,6 +180,32 @@
           "criteria": "Given that the user taps on a previously achieved goal, when the goal detail view opens, the user should be shown the goal description and the date it was completed"
         }
       ]
+    }
+  ],
+  "caseStudies": [
+    {
+      "id": "food-sharing",
+      "name": "Food Sharing App",
+      "description": "An app that connects people in food poverty with allotment owners who have excess produce.",
+      "topics": ["user_stories_and_acceptance_criteria"],
+      "problemId": "food-sharing-problem",
+      "userStoryIds": ["food-sharing-us-1"]
+    },
+    {
+      "id": "mental-health-assistance",
+      "name": "Mental Health Assistance App",
+      "description": "An app that tracks users' mood over time and provides personalised resources, peer group chat, and volunteer-led one-to-one support for young adults aged 18–24.",
+      "topics": ["user_stories_and_acceptance_criteria"],
+      "problemId": "mental-health-problem",
+      "userStoryIds": ["mental-health-us-1"]
+    },
+    {
+      "id": "reset-password",
+      "name": "Reset Password",
+      "description": "A system to reset a user's password.",
+      "topics": ["use_cases"],
+      "problemId": "reset-password-problem",
+      "userStoryIds": ["reset-password-us-1"]
     }
   ]
 }
