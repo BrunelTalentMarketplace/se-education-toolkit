@@ -1,0 +1,137 @@
+{
+  "areas": [
+    {
+      "name": "requirements engineering",
+      "topics": ["user_stories_and_acceptance_criteria", "use_cases"]
+    },
+    {
+      "name": "coding maintainance",
+      "topics": ["code_review", "refactoring"] 
+    }
+  ],
+  "personas": ["tutor", "student", "professional"],
+  "problems": [
+    {
+      "id": "food-sharing-problem",
+      "statement": "People in food poverty need access to fresh food in a way that preserves their dignity and avoids excessive bureaucracy.",
+      "description": "An app that helps people locate fresh produce in their area more easily. Allotment owners can advertise their excess produce and when/how it can be picked up. Registered users can browse and check out the produce they like.",
+      "context": "UN SDG #2 (Zero Hunger)",
+      "personas": [
+        {
+          "name": "Sarah",
+          "role": "Allotment User",
+          "description": "A young mother of two who has recently lost her job. She believes buying frozen or fast food is not a matter of ignorance but of being unable to afford healthy food. She doesn't want to use a food bank because she doesn't want to be seen asking for help."
+        },
+        {
+          "name": "Benjamin",
+          "role": "Allotment Owner",
+          "description": "Owns an allotment and has been overproducing. Wants to transform part of his allotment to provide those on benefits, pensioners on state pension and those on a low-income free organic fruit and vegetables. But doesn't know how to reach those people."
+        }
+      ]
+    },
+    {
+      "id": "reset-password-problem",
+      "statement": "Users need a secure way to reset their forgotten passwords.",
+      "description": "A system that allows users to safely reset their account passwords through a secure link and verification process.",
+      "personas": [
+        {
+          "name": "User",
+          "role": "Account Owner",
+          "description": "A user who has forgotten their password and needs to regain access."
+        },
+        {
+          "name": "System",
+          "role": "Password Manager",
+          "description": "The authentication system that validates and updates passwords."
+        }
+      ]
+    },
+    {
+      "id": "mental-health-problem",
+      "statement": "Young adults aged 18–24 experiencing mental health difficulties need accessible, affordable, and stigma-free support in a way that respects their privacy and removes barriers to seeking help.",
+      "description": "An app that tracks users' mood over time and provides personalised resources, peer group chat, and volunteer-led one-to-one support for young adults aged 18–24 who may not otherwise seek professional help.",
+      "context": "UN SDG #3 (Good Health and Well-Being)",
+      "personas": [
+        {
+          "name": "Stephany",
+          "role": "App User",
+          "description": "A 20-year-old university student who experiences anxiety, low mood, and loneliness. She feels pressure from academic life, compares herself to others on social media, and struggles with self-esteem. She would not visit a GP or therapist due to cost, waiting times, and fear of judgment, but she is open to anonymous digital support that she can access privately on her phone."
+        },
+        {
+          "name": "Marcus",
+          "role": "Volunteer Supporter",
+          "description": "A 34-year-old qualified counsellor who volunteers a few hours a week to support young people who would never walk into a therapy room. He wants a simple, moderated interface for conducting anonymous one-to-one text sessions without excessive administrative burden."
+        }
+      ]
+    }
+  ],
+  "userStories": [
+    {
+      "id": "food-sharing-us-1",
+      "problemId": "food-sharing-problem",
+      "statement": "As an allotment user, I want to create an app account so that I can save my preferences",
+      "description": "User registration for accessing fresh produce listings and preferences",
+      "acceptanceCriteria": [
+        {
+          "id": "food-sharing-ac-1-1",
+          "criteria": "Given that the user is on the register page, when the user enters email, password, types of fresh food, and locations to pick up the food from, then the user should be registered and directed to the login page"
+        },
+        {
+          "id": "food-sharing-ac-1-2",
+          "criteria": "Given that the user entered a password that doesn't meet password requirements, when the registration button is clicked, then the error message 'invalid password' is displayed"
+        },
+        {
+          "id": "food-sharing-ac-1-3",
+          "criteria": "Given that the user entered an invalid email, when the registration button is clicked, then the error message 'invalid email' is displayed"
+        }
+      ]
+    },
+    {
+      "id": "reset-password-us-1",
+      "problemId": "reset-password-problem",
+      "statement": "As a user, I want to reset my forgotten password so that I can regain access to my account",
+      "acceptanceCriteria": [
+        {
+          "id": "reset-password-ac-1-1",
+          "criteria": "Given that the user is on the login page, when the user clicks the reset password link, then the system sends a password reset link to their email"
+        },
+        {
+          "id": "reset-password-ac-1-2",
+          "criteria": "Given that the user received the reset link, when the user enters a new password, then the system validates and updates the account password"
+        },
+        {
+          "id": "reset-password-ac-1-3",
+          "criteria": "Given that the reset link has expired, when the user tries to use it, then the system displays an error message and prompts to request a new link"
+        }
+      ]
+    },
+    {
+      "id": "mental-health-us-1",
+      "problemId": "mental-health-problem",
+      "statement": "As a user, I want to be given advice on how to feel better through personal goals and access my previously achieved goals to view my progress",
+      "description": "Personal goal setting and progress tracking for mental health improvement",
+      "acceptanceCriteria": [
+        {
+          "id": "mental-health-ac-1-1",
+          "criteria": "Given that the user has completed a mood check-in, when the check-in is submitted, the app should display a set of personalised goal suggestions based on the user's current mood score"
+        },
+        {
+          "id": "mental-health-ac-1-2",
+          "criteria": "Given that the user is viewing their suggested goals, when the user selects a goal and taps 'Set as my goal', the goal should be saved and displayed on the user's goals dashboard as active"
+        },
+        {
+          "id": "mental-health-ac-1-3",
+          "criteria": "Given that the user has marked a goal as complete, when the user navigates to the progress section, the completed goal should appear in a 'Goals achieved' list with the date it was completed"
+        },
+        {
+          "id": "mental-health-ac-1-4",
+          "criteria": "Given that the user has no previously completed goals, when the user navigates to the progress section, the message 'No goals completed yet — keep going!' should be displayed"
+        },
+        {
+          "id": "mental-health-ac-1-5",
+          "criteria": "Given that the user taps on a previously achieved goal, when the goal detail view opens, the user should be shown the goal description and the date it was completed"
+        }
+      ]
+    }
+  ]
+}
