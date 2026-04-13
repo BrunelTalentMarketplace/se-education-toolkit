@@ -84,9 +84,10 @@ const CaseStudyHierarchy: React.FC<CaseStudyHierarchyProps> = ({
   };
 
   const selectUserStory = (userStoryId: string) => {
-    setSelectedUserStoryId(userStoryId);
+    const newId = selectedUserStoryId === userStoryId ? "" : userStoryId;
+    setSelectedUserStoryId(newId);
     setSelectedAcceptanceCriteriaIds([]);
-    onSelectionChange({ problemId: selectedProblemId, userStoryId, acceptanceCriteriaIds: [] });
+    onSelectionChange({ problemId: selectedProblemId, userStoryId: newId, acceptanceCriteriaIds: [] });
   };
 
   const toggleAcceptanceCriteria = (acId: string, userStoryId: string) => {
@@ -216,7 +217,7 @@ const CaseStudyHierarchy: React.FC<CaseStudyHierarchyProps> = ({
                                             : "hover:bg-gray-100"
                                         } transition-colors`}
                                       >
-                                        Select this user story
+                                        {selectedUserStoryId === us.id ? "Deselect" : "Select this user story"}
                                       </button>
 
                                       {/* Acceptance Criteria */}
