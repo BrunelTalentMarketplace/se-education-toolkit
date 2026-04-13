@@ -10,7 +10,7 @@ import { AcceptanceCriteria } from "@/data";
 import { filterLabs } from "@/lib/lab-utils";
 import { getPersonas } from "@/lib/lab-utils";
 import SelectFilter from "@/components/labs/SelectFilter";
-import { getTopics, getAreas, getCaseStudies } from "@/lib/lab-utils";
+import { getTopics, getAreas, getProblems } from "@/lib/lab-utils";
 import CaseStudyHierarchy from "@/components/labs/CaseStudyHierarchy";
 
 const findMatchingOption = (options: string[], urlValue: string): string => {
@@ -33,7 +33,6 @@ const LabsPage = () => {
     area: "",
     topic: "",
     persona: "",
-    caseStudy: "",
   });
 
   const [hierarchySelection, setHierarchySelection] = useState({
@@ -54,7 +53,6 @@ const LabsPage = () => {
       const urlArea = findMatchingOption(areas, searchParams.get("area") || "");
       const urlTopic = findMatchingOption(topics, searchParams.get("topic") || "");
       const urlPersona = findMatchingOption(personas, searchParams.get("persona") || "");
-      const urlCaseStudy = searchParams.get("caseStudy") || "";
       const urlProblemId = searchParams.get("problemId") || "";
       const urlUserStoryId = searchParams.get("userStoryId") || "";
       const urlAcceptanceCriteriaIds = searchParams.get("acceptanceCriteriaIds")?.split(",") || [];
@@ -62,14 +60,12 @@ const LabsPage = () => {
         if (
           prev.area !== urlArea ||
           prev.topic !== urlTopic ||
-          prev.persona !== urlPersona ||
-          prev.caseStudy !== urlCaseStudy
+          prev.persona !== urlPersona
         ) {
           return {
             area: urlArea,
             topic: urlTopic,
             persona: urlPersona,
-            caseStudy: urlCaseStudy,
           };
         }
         return prev;
@@ -85,13 +81,10 @@ const LabsPage = () => {
 
   const selectedTopic = filters.topic;
   const explicitPersona = filters.persona;
-  const explicitCaseStudy = filters.caseStudy;
 
-
-
-  const availableCaseStudies = useMemo(() => {
+  const availableProblems = useMemo(() => {
     if (selectedArea && selectedTopic) {
-      return getCaseStudies(selectedArea, selectedTopic);
+      return getProblems(selectedArea, selectedTopic);
     }
     return [];
   }, [selectedArea, selectedTopic]);
@@ -104,35 +97,26 @@ const LabsPage = () => {
     return "";
   }, [explicitPersona, selectedArea, selectedTopic, personas]);
 
-  const defaultCaseStudy = useMemo(() => {
-    if (explicitCaseStudy) return explicitCaseStudy;
-    if (selectedArea && selectedTopic && availableCaseStudies.length > 0) {
-      return availableCaseStudies[0].id;
-    }
-    return "";
-  }, [explicitCaseStudy, selectedArea, selectedTopic, availableCaseStudies]);
-
-  const { filteredLabs, selectedCaseStudyData } = useMemo(() => {
-    if (selectedArea && selectedTopic && defaultPersona && defaultCaseStudy) {
+  const { filteredLabs, selectedProblem } = useMemo(() => {
+    if (selectedArea && selectedTopic && defaultPersona) {
       const result = filterLabs(
         selectedArea,
         selectedTopic,
         defaultPersona,
-        defaultCaseStudy
+        hierarchySelection.problemId
       );
       return {
         filteredLabs: result.labs,
-        selectedCaseStudyData: result.selectedCaseStudy,
+        selectedProblem: result.selectedProblem,
       };
     }
-    return { filteredLabs: [], selectedCaseStudyData: null };
-  }, [selectedArea, selectedTopic, defaultPersona, defaultCaseStudy]);
+    return { filteredLabs: [], selectedProblem: null };
+  }, [selectedArea, selectedTopic, defaultPersona, hierarchySelection.problemId]);
 
   const selectedHierarchicalData = useMemo(() => {
-    if (!selectedCaseStudyData || !hierarchySelection.problemId || !hierarchySelection.userStoryId || hierarchySelection.acceptanceCriteriaIds.length === 0) return null;
+    if (!selectedProblem || !hierarchySelection.userStoryId || hierarchySelection.acceptanceCriteriaIds.length === 0) return null;
 
-    const problem = selectedCaseStudyData.problem;
-    const userStory = selectedCaseStudyData.userStories.find(us => us.id === hierarchySelection.userStoryId);
+    const userStory = selectedProblem.userStories.find(us => us.id === hierarchySelection.userStoryId);
     const acceptanceCriteria = hierarchySelection.acceptanceCriteriaIds
       .map(id => userStory?.acceptanceCriteria.find(ac => ac.id === id))
       .filter((ac): ac is AcceptanceCriteria => ac !== undefined);
@@ -140,11 +124,11 @@ const LabsPage = () => {
     if (!userStory || acceptanceCriteria.length === 0) return null;
 
     return {
-      problem,
+      problem: selectedProblem,
       userStory,
       acceptanceCriteria,
     };
-  }, [selectedCaseStudyData, hierarchySelection]);
+  }, [selectedProblem, hierarchySelection]);
 
   const selectedLab = filteredLabs.length > 0 ? filteredLabs[0] : null;
 
@@ -155,20 +139,13 @@ const LabsPage = () => {
         newFilters.area = findMatchingOption(areas, updates.area);
         if (newFilters.area !== prev.area) {
           newFilters.topic = "";
-          newFilters.caseStudy = "";
         }
       }
       if (updates.topic !== undefined) {
         newFilters.topic = findMatchingOption(topics, updates.topic);
-        if (newFilters.topic !== prev.topic) {
-          newFilters.caseStudy = "";
-        }
       }
       if (updates.persona !== undefined) {
         newFilters.persona = findMatchingOption(personas, updates.persona);
-      }
-      if (updates.caseStudy !== undefined) {
-        newFilters.caseStudy = updates.caseStudy;
       }
       return newFilters;
     });
@@ -179,7 +156,6 @@ const LabsPage = () => {
     if (filters.area) params.set("area", filters.area.toLowerCase());
     if (filters.topic) params.set("topic", filters.topic.toLowerCase());
     if (filters.persona) params.set("persona", filters.persona.toLowerCase());
-    if (filters.caseStudy) params.set("caseStudy", filters.caseStudy);
     if (hierarchySelection.problemId) params.set("problemId", hierarchySelection.problemId);
     if (hierarchySelection.userStoryId) params.set("userStoryId", hierarchySelection.userStoryId);
     if (hierarchySelection.acceptanceCriteriaIds.length > 0) params.set("acceptanceCriteriaIds", hierarchySelection.acceptanceCriteriaIds.join(","));
@@ -333,9 +309,8 @@ const LabsPage = () => {
     setHierarchySelection(selection);
   };
 
-  const handleCaseStudyChange = (caseStudyId: string) => {
-    updateFilters({ caseStudy: caseStudyId });
-    setHierarchySelection({ problemId: "", userStoryId: "", acceptanceCriteriaIds: [] });
+  const handleProblemChange = (problemId: string) => {
+    setHierarchySelection({ problemId, userStoryId: "", acceptanceCriteriaIds: [] });
   };
 
   return (
@@ -402,10 +377,9 @@ const LabsPage = () => {
             transition={{ duration: 0.5, delay: 0.3 }}
           >
             <CaseStudyHierarchy
-              caseStudies={availableCaseStudies}
-              selectedCaseStudyId={defaultCaseStudy}
+              problems={availableProblems}
               onSelectionChange={handleHierarchySelectionChange}
-              onCaseStudyChange={handleCaseStudyChange}
+              onProblemChange={handleProblemChange}
               initialSelection={hierarchySelection}
             />
           </motion.div>

@@ -1,8 +1,9 @@
 import areasData from './lab-data.json';
+import { PROMPTS } from './prompts';
 
 // Types derived from JSON shape
 export type Area = typeof areasData.areas[number]['name'];
-export type Topic = typeof areasData.areas[number]['topics'][number];
+export type Topic = typeof areasData.areas[number]['topics'][number]['name'];
 export type PersonaType = typeof areasData.personas[number];
 
 export type Step = {
@@ -38,7 +39,6 @@ export type AcceptanceCriteria = {
 
 export type UserStoryExample = {
   id: string;
-  problemId?: string;
   statement: string;
   description?: string;
   acceptanceCriteria: AcceptanceCriteria[];
@@ -46,17 +46,11 @@ export type UserStoryExample = {
 
 export type Problem = {
   id: string;
+  name: string;
   statement: string;
   description: string;
   context?: string;
   personas: Persona[];
-};
-
-export type CaseStudy = {
-  id: string;
-  name: string;
-  description: string;
-  problem: Problem;
   userStories: UserStoryExample[];
 };
 
@@ -65,25 +59,29 @@ export type LabCategory = {
   topic: string;
   persona: string;
   labs: Lab[];
-  caseStudies: CaseStudy[];
+  problems: Problem[];
 };
 
-// Internal type for the raw JSON shape of a case study definition
-type CaseStudyDef = {
-  id: string;
-  name: string;
-  description: string;
-  topics: string[];
-  problemId: string;
-  userStoryIds: string[];
-};
+// Build flat GAMES array by injecting area and topic from the nested structure
+export const GAMES: Lab[] = areasData.areas.flatMap((area) =>
+  area.topics.flatMap((topic) =>
+    topic.games.map((lab) => ({
+      ...lab,
+      area: area.name as Area,
+      topic: topic.name as Topic,
+      steps: lab.steps.map((step) => {
+        const { promptFile, ...rest } = step as typeof step & { promptFile?: string };
+        const prompt: string | null = promptFile
+          ? (PROMPTS[promptFile] ?? null)
+          : (('prompt' in rest ? rest.prompt : null) as string | null);
+        return { ...rest, prompt };
+      }),
+    }))
+  )
+);
 
-// Raw arrays loaded directly from JSON
-export const GAMES: Lab[] = areasData.labs as Lab[];
 export const PROBLEMS: Problem[] = areasData.problems as Problem[];
-export const USER_STORIES: UserStoryExample[] = areasData.userStories as UserStoryExample[];
-export const AREAS: Area[] = areasData.areas.map((a) => a.name);
-export const PERSONAS: PersonaType[] = areasData.personas;
+export const USER_STORIES: UserStoryExample[] = PROBLEMS.flatMap((p) => p.userStories);
 
 // Lookup helpers
 export const getGameById = (id: string): Lab | undefined =>
@@ -93,57 +91,41 @@ export const getGameByFilters = (area: string, topic: string, persona: string): 
   GAMES.filter((g) => g.area === area && g.topic === topic && g.persona === persona);
 
 export const getTopicsForArea = (area: Area): Topic[] =>
-  areasData.areas.find((a) => a.name === area)?.topics ?? [];
+  areasData.areas.find((a) => a.name === area)?.topics.map((t) => t.name as Topic) ?? [];
 
 export const getProblemById = (id: string): Problem | undefined =>
   PROBLEMS.find((p) => p.id === id);
 
-export const getUserStoriesByIds = (ids: string[]): UserStoryExample[] =>
-  USER_STORIES.filter((us) => ids.includes(us.id));
-
-// Build CaseStudy objects from JSON definitions.
-// Skips any entry whose problemId doesn't resolve, and warns rather than crashing.
-const rawCaseStudies = areasData.caseStudies as CaseStudyDef[];
-
-export const CASE_STUDIES: CaseStudy[] = rawCaseStudies.reduce<CaseStudy[]>((acc, def) => {
-  const problem = PROBLEMS.find((p) => p.id === def.problemId);
-  if (!problem) {
-    console.warn(`CaseStudy "${def.id}": problem "${def.problemId}" not found — skipping.`);
-    return acc;
-  }
-  acc.push({
-    id: def.id,
-    name: def.name,
-    description: def.description,
-    problem,
-    userStories: getUserStoriesByIds(def.userStoryIds),
-  });
-  return acc;
-}, []);
-
-// Build LABS by deriving the topic → case study association from JSON.
+// Build LABS by deriving the topic → problem association from each problem's topics field.
 // One LabCategory per (area, topic, persona) combination that has at least one game.
 export const LABS: LabCategory[] = areasData.areas.flatMap((area) =>
   area.topics.flatMap((topic) => {
     const personas = [
       ...new Set(
-        GAMES.filter((g) => g.area === area.name && g.topic === topic).map((g) => g.persona)
+        GAMES.filter((g) => g.area === area.name && g.topic === topic.name).map((g) => g.persona)
       ),
     ];
     if (personas.length === 0) return [];
 
-    const caseStudies = CASE_STUDIES.filter((cs) =>
-      rawCaseStudies.find((def) => def.id === cs.id)?.topics.includes(topic)
-    );
+    const problems = topic.problemIds
+      .map((id) => {
+        const p = PROBLEMS.find((p) => p.id === id);
+        if (!p) console.warn(`Topic "${topic.name}" references unknown problem id "${id}"`);
+        return p;
+      })
+      .filter((p): p is Problem => p !== undefined);
 
     return personas.map((persona) => ({
       area: area.name,
-      topic,
+      topic: topic.name,
       persona,
-      labs: getGameByFilters(area.name, topic, persona),
-      caseStudies,
+      labs: getGameByFilters(area.name, topic.name, persona),
+      problems,
     }));
   })
 );
 
-export default { GAMES, CASE_STUDIES };
+export const AREAS: Area[] = areasData.areas.map((a) => a.name);
+export const PERSONAS: PersonaType[] = areasData.personas;
+
+export default { GAMES };

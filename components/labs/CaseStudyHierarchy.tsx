@@ -3,17 +3,16 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, ChevronRight, CheckCircle, Circle } from "lucide-react";
-import { CaseStudy } from "@/data";
+import { Problem } from "@/data";
 
 interface CaseStudyHierarchyProps {
-  caseStudies: CaseStudy[];
-  selectedCaseStudyId: string;
+  problems: Problem[];
   onSelectionChange: (selection: {
     problemId: string;
     userStoryId: string;
     acceptanceCriteriaIds: string[];
   }) => void;
-  onCaseStudyChange: (caseStudyId: string) => void;
+  onProblemChange: (problemId: string) => void;
   initialSelection?: {
     problemId: string;
     userStoryId: string;
@@ -22,13 +21,11 @@ interface CaseStudyHierarchyProps {
 }
 
 const CaseStudyHierarchy: React.FC<CaseStudyHierarchyProps> = ({
-  caseStudies,
-  selectedCaseStudyId,
+  problems,
   onSelectionChange,
-  onCaseStudyChange,
+  onProblemChange,
   initialSelection,
 }) => {
-  const [activeCaseStudyId, setActiveCaseStudyId] = useState<string>(selectedCaseStudyId);
   const [expandedProblems, setExpandedProblems] = useState<Set<string>>(new Set());
   const [expandedUserStories, setExpandedUserStories] = useState<Set<string>>(new Set());
   const [selectedProblemId, setSelectedProblemId] = useState<string>("");
@@ -40,21 +37,12 @@ const CaseStudyHierarchy: React.FC<CaseStudyHierarchyProps> = ({
       setSelectedProblemId(initialSelection.problemId);
       setSelectedUserStoryId(initialSelection.userStoryId);
       setSelectedAcceptanceCriteriaIds(initialSelection.acceptanceCriteriaIds);
-      if (initialSelection.problemId) {
-        const cs = caseStudies.find((c) => c.problem.id === initialSelection.problemId);
-        if (cs) setActiveCaseStudyId(cs.id);
-      }
     }
-  }, [initialSelection, caseStudies]);
+  }, [initialSelection]);
 
-  const activeCaseStudy = caseStudies.find((cs) => cs.id === activeCaseStudyId);
-  const selectedProblem =
-    activeCaseStudy && selectedProblemId === activeCaseStudy.problem.id
-      ? activeCaseStudy.problem
-      : null;
-  const selectedUserStory = activeCaseStudy?.userStories.find(
-    (us) => us.id === selectedUserStoryId
-  );
+  const selectedProblem = problems.find((p) => p.id === selectedProblemId) ?? null;
+  const selectedUserStory =
+    selectedProblem?.userStories.find((us) => us.id === selectedUserStoryId) ?? null;
 
   const toggleProblem = (problemId: string) => {
     setExpandedProblems((prev) => {
@@ -74,12 +62,11 @@ const CaseStudyHierarchy: React.FC<CaseStudyHierarchyProps> = ({
     });
   };
 
-  const selectProblem = (problemId: string, cs: CaseStudy) => {
+  const selectProblem = (problemId: string) => {
     setSelectedProblemId(problemId);
-    setActiveCaseStudyId(cs.id);
     setSelectedUserStoryId("");
     setSelectedAcceptanceCriteriaIds([]);
-    onCaseStudyChange(cs.id);
+    onProblemChange(problemId);
     onSelectionChange({ problemId, userStoryId: "", acceptanceCriteriaIds: [] });
   };
 
@@ -91,8 +78,6 @@ const CaseStudyHierarchy: React.FC<CaseStudyHierarchyProps> = ({
   };
 
   const toggleAcceptanceCriteria = (acId: string, userStoryId: string) => {
-    // Auto-select the user story if a different one is currently selected
-    const effectiveUserStoryId = selectedUserStoryId !== userStoryId ? userStoryId : selectedUserStoryId;
     if (selectedUserStoryId !== userStoryId) {
       setSelectedUserStoryId(userStoryId);
       setSelectedAcceptanceCriteriaIds([acId]);
@@ -103,17 +88,13 @@ const CaseStudyHierarchy: React.FC<CaseStudyHierarchyProps> = ({
       ? selectedAcceptanceCriteriaIds.filter((id) => id !== acId)
       : [...selectedAcceptanceCriteriaIds, acId];
     setSelectedAcceptanceCriteriaIds(newSelected);
-    onSelectionChange({
-      problemId: selectedProblemId,
-      userStoryId: effectiveUserStoryId,
-      acceptanceCriteriaIds: newSelected,
-    });
+    onSelectionChange({ problemId: selectedProblemId, userStoryId, acceptanceCriteriaIds: newSelected });
   };
 
-  if (caseStudies.length === 0) {
+  if (problems.length === 0) {
     return (
       <div className="bg-white/30 backdrop-blur-sm border border-white/20 rounded-xl p-4">
-        <p className="text-gray-600">Select area and topic first to view case studies.</p>
+        <p className="text-gray-600">Select area and topic first to view problems.</p>
       </div>
     );
   }
@@ -125,22 +106,21 @@ const CaseStudyHierarchy: React.FC<CaseStudyHierarchyProps> = ({
         <h3 className="text-lg font-semibold text-gray-800 mb-4">Select a Problem</h3>
 
         <div className="space-y-2">
-          {caseStudies.map((cs) => (
-            <div key={cs.id} className="border border-gray-200 rounded-lg">
-              {/* Problem header */}
+          {problems.map((p) => (
+            <div key={p.id} className="border border-gray-200 rounded-lg">
               <button
-                onClick={() => toggleProblem(cs.problem.id)}
+                onClick={() => toggleProblem(p.id)}
                 className="w-full flex items-center justify-between p-3 hover:bg-gray-50 transition-colors"
               >
                 <div className="flex items-center gap-2 min-w-0">
-                  {selectedProblemId === cs.problem.id ? (
+                  {selectedProblemId === p.id ? (
                     <CheckCircle size={16} className="text-green-500 flex-shrink-0" />
                   ) : (
                     <Circle size={16} className="text-gray-400 flex-shrink-0" />
                   )}
-                  <span className="font-medium text-left text-sm truncate">{cs.name}</span>
+                  <span className="font-medium text-left text-sm truncate">{p.name}</span>
                 </div>
-                {expandedProblems.has(cs.problem.id) ? (
+                {expandedProblems.has(p.id) ? (
                   <ChevronDown size={16} className="flex-shrink-0 ml-2" />
                 ) : (
                   <ChevronRight size={16} className="flex-shrink-0 ml-2" />
@@ -148,7 +128,7 @@ const CaseStudyHierarchy: React.FC<CaseStudyHierarchyProps> = ({
               </button>
 
               <AnimatePresence>
-                {expandedProblems.has(cs.problem.id) && (
+                {expandedProblems.has(p.id) && (
                   <motion.div
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: "auto", opacity: 1 }}
@@ -157,25 +137,25 @@ const CaseStudyHierarchy: React.FC<CaseStudyHierarchyProps> = ({
                     className="overflow-hidden"
                   >
                     <div className="p-3 border-t border-gray-100">
-                      <p className="text-sm text-gray-700 mb-2">{cs.problem.statement}</p>
+                      <p className="text-sm text-gray-700 mb-2">{p.statement}</p>
                       <button
-                        onClick={() => selectProblem(cs.problem.id, cs)}
+                        onClick={() => selectProblem(p.id)}
                         className={`w-full text-left p-2 rounded text-sm mb-3 ${
-                          selectedProblemId === cs.problem.id
+                          selectedProblemId === p.id
                             ? "bg-blue-100 text-blue-800"
                             : "hover:bg-gray-100"
                         } transition-colors`}
                       >
-                        Select this problem
+                        {selectedProblemId === p.id ? "Deselect" : "Select this problem"}
                       </button>
 
                       {/* User Stories — only shown once this problem is selected */}
-                      {selectedProblemId === cs.problem.id && (
+                      {selectedProblemId === p.id && (
                         <div className="border border-gray-200 rounded-lg">
                           <div className="p-2 border-b border-gray-100 bg-gray-50 rounded-t-lg">
                             <h4 className="font-medium text-gray-700 text-sm">User Stories</h4>
                           </div>
-                          {cs.userStories.map((us) => (
+                          {p.userStories.map((us) => (
                             <div key={us.id} className="border-t border-gray-100 first:border-t-0">
                               <button
                                 onClick={() => toggleUserStory(us.id)}
@@ -220,7 +200,6 @@ const CaseStudyHierarchy: React.FC<CaseStudyHierarchyProps> = ({
                                         {selectedUserStoryId === us.id ? "Deselect" : "Select this user story"}
                                       </button>
 
-                                      {/* Acceptance Criteria */}
                                       <div className="space-y-1">
                                         <h5 className="text-xs font-medium text-gray-700">
                                           Acceptance Criteria:
@@ -293,9 +272,7 @@ const CaseStudyHierarchy: React.FC<CaseStudyHierarchyProps> = ({
             <div>
               <h4 className="font-medium text-gray-800 mb-2">User Story</h4>
               <div className="bg-green-50 p-3 rounded-lg">
-                <p className="text-sm font-medium text-gray-800 mb-1">
-                  {selectedUserStory.statement}
-                </p>
+                <p className="text-sm font-medium text-gray-800 mb-1">{selectedUserStory.statement}</p>
                 {selectedUserStory.description && (
                   <p className="text-sm text-gray-700">{selectedUserStory.description}</p>
                 )}
@@ -310,9 +287,7 @@ const CaseStudyHierarchy: React.FC<CaseStudyHierarchyProps> = ({
               </h4>
               <div className="bg-purple-50 p-3 rounded-lg space-y-2">
                 {selectedAcceptanceCriteriaIds.map((id) => {
-                  const criteria = selectedUserStory?.acceptanceCriteria.find(
-                    (ac) => ac.id === id
-                  );
+                  const criteria = selectedUserStory?.acceptanceCriteria.find((ac) => ac.id === id);
                   return criteria ? (
                     <div key={id} className="text-sm text-gray-700 flex items-start gap-2">
                       <CheckCircle size={14} className="text-purple-600 mt-0.5 flex-shrink-0" />

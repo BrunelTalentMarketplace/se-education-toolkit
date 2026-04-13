@@ -1,5 +1,4 @@
-import { Lab, LabCategory, CaseStudy } from "@/data";
-
+import { Lab, LabCategory, Problem } from "@/data";
 import { LABS } from "@/data";
 
 export const getAreas = (): string[] => {
@@ -28,17 +27,14 @@ export const getPersonas = (): string[] => {
   return [...new Set(LABS.map((lab: LabCategory) => lab.persona.toLowerCase()))];
 };
 
-export const getCaseStudies = (area: string, topic: string): CaseStudy[] => {
+export const getProblems = (area: string, topic: string): Problem[] => {
   if (!area || !topic) return [];
-
   const formattedTopic = topic.toLowerCase().replace(/ /g, "_");
-
-  const matchingCategory = LABS.find(
+  const match = LABS.find(
     (lab: LabCategory) =>
       lab.area === area.toLowerCase() && lab.topic === formattedTopic
   );
-
-  return matchingCategory ? matchingCategory.caseStudies : [];
+  return match ? match.problems : [];
 };
 
 export const formatTopicForQuery = (topic: string): string => {
@@ -49,11 +45,10 @@ export const filterLabs = (
   area: string,
   topic: string,
   persona: string,
-  caseStudyId: string
-): { labs: Lab[]; selectedCaseStudy: CaseStudy | null } => {
+  problemId: string
+): { labs: Lab[]; selectedProblem: Problem | null } => {
   const formattedTopic = formatTopicForQuery(topic);
 
-  // Find the matching category
   const matchingCategory = LABS.find(
     (lab: LabCategory) =>
       lab.area === area.toLowerCase() &&
@@ -61,15 +56,12 @@ export const filterLabs = (
       lab.persona === persona.toLowerCase()
   );
 
-  if (!matchingCategory) return { labs: [], selectedCaseStudy: null };
+  if (!matchingCategory) return { labs: [], selectedProblem: null };
 
-  // Find the selected case study
-  const selectedCaseStudy =
-    matchingCategory.caseStudies.find((study) => study.id === caseStudyId) ||
-    null;
+  const selectedProblem =
+    matchingCategory.problems.find((p) => p.id === problemId) ?? null;
 
-  // Clone the labs to avoid modifying the original data
   const labs = JSON.parse(JSON.stringify(matchingCategory.labs)) as Lab[];
 
-  return { labs, selectedCaseStudy };
+  return { labs, selectedProblem };
 };
