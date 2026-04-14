@@ -1,4 +1,4 @@
-import { Lab, LabCategory, Problem, PERSONAS } from "@/data";
+import { Lab, LabCategory, Problem, PERSONAS, TopicHierarchy, DEFAULT_HIERARCHY } from "@/data";
 import { LABS } from "@/data";
 
 export const getAreas = (): string[] => {
@@ -45,7 +45,7 @@ export const filterLabs = (
   area: string,
   topic: string,
   problemId: string
-): { labs: Lab[]; selectedProblem: Problem | null } => {
+): { labs: Lab[]; selectedProblem: Problem | null; hierarchy: TopicHierarchy } => {
   const formattedTopic = formatTopicForQuery(topic);
 
   const matchingCategory = LABS.find(
@@ -53,12 +53,12 @@ export const filterLabs = (
       lab.area === area.toLowerCase() && lab.topic === formattedTopic
   );
 
-  if (!matchingCategory) return { labs: [], selectedProblem: null };
+  if (!matchingCategory) return { labs: [], selectedProblem: null, hierarchy: DEFAULT_HIERARCHY };
 
   const selectedProblem =
     matchingCategory.problems.find((p) => p.id === problemId) ?? null;
 
   const labs = JSON.parse(JSON.stringify(matchingCategory.labs)) as Lab[];
 
-  return { labs, selectedProblem };
+  return { labs, selectedProblem, hierarchy: matchingCategory.hierarchy };
 };

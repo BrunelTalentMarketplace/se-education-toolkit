@@ -10,6 +10,10 @@
       "topics": [
         {
           "name": "user_stories_and_acceptance_criteria",
+          "hierarchy": {
+            "levels": ["problem", "userStory", "acceptanceCriteria"],
+            "labels": { "userStory": "User Story", "acceptanceCriteria": "Acceptance Criteria" }
+          },
           "problemIds": ["food-sharing-problem", "mental-health-problem"],
           "games": [
             {
@@ -42,6 +46,10 @@
         },
         {
           "name": "use_cases",
+          "hierarchy": {
+            "levels": ["problem", "userStory"],
+            "labels": { "userStory": "Use Case Scenario" }
+          },
           "problemIds": ["reset-password-problem"],
           "games": [
             {
@@ -63,6 +71,233 @@
                   "guidelines": [
                     "Analyze each use case step carefully",
                     "Try finding issues before requesting hints"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "software testing",
+      "personaIntros": {
+        "tutor": "I want to act as a software testing teacher",
+        "student": "I want you to act as a fellow student learning software testing",
+        "professional": "I want you to act as an experienced software engineer with a strong background in TDD and software quality"
+      },
+      "topics": [
+        {
+          "name": "test_validity",
+          "hierarchy": {
+            "levels": ["problem"],
+            "labels": {}
+          },
+          "problemIds": [
+            "test-palindrome-happy-path",
+            "test-reverse-trivial",
+            "test-palindrome-overcrowded",
+            "test-cart-internal-state",
+            "test-cart-remove-chained"
+          ],
+          "games": [
+            {
+              "id": "red-or-green",
+              "title": "Red or Green?",
+              "description": "Sharpen your instinct for spotting good and bad tests",
+              "steps": [
+                {
+                  "type": "setup",
+                  "title": "Part 1: Setup",
+                  "time": 5,
+                  "setup": [
+                    "Open your preferred LLM assistant",
+                    "Copy and paste the following prompt:"
+                  ],
+                  "promptFile": "red-or-green"
+                },
+                {
+                  "type": "interaction",
+                  "title": "Part 2: Analyse the Test",
+                  "time": 15,
+                  "guidelines": [
+                    "Give your verdict before asking for hints — is this test actually useful?",
+                    "Think about what the test does NOT cover before the AI explains",
+                    "Ask yourself: would this test catch a real bug, or would it always pass?"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "tdd_test_first",
+          "hierarchy": {
+            "levels": ["problem", "userStory", "acceptanceCriteria"],
+            "labels": { "userStory": "User Story", "acceptanceCriteria": "Acceptance Criteria" }
+          },
+          "problemIds": ["bank-account-tdd", "password-validator-tdd"],
+          "games": [
+            {
+              "id": "write-the-test-first",
+              "title": "Write the Test First",
+              "description": "Practice TDD by writing tests before any implementation exists",
+              "steps": [
+                {
+                  "type": "setup",
+                  "title": "Part 1: Setup",
+                  "time": 5,
+                  "setup": [
+                    "Open your preferred LLM assistant",
+                    "Copy and paste the following prompt:"
+                  ],
+                  "promptFile": "write-the-test-first"
+                },
+                {
+                  "type": "interaction",
+                  "title": "Part 2: Write Your Tests",
+                  "time": 15,
+                  "guidelines": [
+                    "Write tests in pseudocode — no specific programming language needed",
+                    "Each test should check ONE behaviour only",
+                    "Ask yourself: if this feature is not implemented, will my test be RED?",
+                    "Aim for at least one edge case test per acceptance criterion"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "software design",
+      "personaIntros": {
+        "tutor": "I want to act as a software design teacher",
+        "student": "I want you to act as a fellow student learning object-oriented design",
+        "professional": "I want you to act as an experienced software architect with deep knowledge of OO design principles"
+      },
+      "topics": [
+        {
+          "name": "class_diagram_design",
+          "hierarchy": {
+            "levels": ["problem"],
+            "labels": {}
+          },
+          "problemIds": [
+            "design-library-system",
+            "design-payment-processor",
+            "design-animal-hierarchy"
+          ],
+          "games": [
+            {
+              "id": "fix-the-design",
+              "title": "Fix the Design",
+              "description": "Spot and fix intentional design flaws in a UML class diagram",
+              "steps": [
+                {
+                  "type": "setup",
+                  "title": "Part 1: Setup",
+                  "time": 5,
+                  "setup": [
+                    "Open your preferred LLM assistant",
+                    "Copy and paste the following prompt:"
+                  ],
+                  "promptFile": "fix-the-design"
+                },
+                {
+                  "type": "interaction",
+                  "title": "Part 2: Find the Flaws",
+                  "time": 15,
+                  "guidelines": [
+                    "Copy the diagram from the Selected Context below and paste it into your LLM chat",
+                    "State which relationship or class you think is wrong before asking for hints",
+                    "Name the design principle being violated — don't just say 'it looks wrong'",
+                    "Propose a concrete fix for each flaw you find"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "solid_principles",
+          "hierarchy": {
+            "levels": ["problem"],
+            "labels": {}
+          },
+          "problemIds": [
+            "solid-invoice-manager",
+            "solid-bird-hierarchy",
+            "solid-order-service"
+          ],
+          "games": [
+            {
+              "id": "solid-violations",
+              "title": "SOLID Violations",
+              "description": "Identify which SOLID principles are broken and explain how to fix them",
+              "steps": [
+                {
+                  "type": "setup",
+                  "title": "Part 1: Setup",
+                  "time": 5,
+                  "setup": [
+                    "Open your preferred LLM assistant",
+                    "Copy and paste the following prompt:"
+                  ],
+                  "promptFile": "solid-violations"
+                },
+                {
+                  "type": "interaction",
+                  "title": "Part 2: Find the Violations",
+                  "time": 15,
+                  "guidelines": [
+                    "Copy the class description from the Selected Context below and paste it into your LLM chat",
+                    "Name the specific SOLID principle being violated — S, O, L, I, or D",
+                    "Explain what change or scenario would expose the problem before asking for hints",
+                    "Propose a concrete refactoring or structural fix for each violation"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "sequence_diagram_design",
+          "hierarchy": {
+            "levels": ["problem"],
+            "labels": {}
+          },
+          "problemIds": [
+            "seq-atm-withdrawal",
+            "seq-login-flow",
+            "seq-order-checkout"
+          ],
+          "games": [
+            {
+              "id": "sequence-diagram-repair",
+              "title": "Sequence Diagram Repair",
+              "description": "Spot flaws in UML sequence diagrams — wrong order, layer bypasses, missing flows",
+              "steps": [
+                {
+                  "type": "setup",
+                  "title": "Part 1: Setup",
+                  "time": 5,
+                  "setup": [
+                    "Open your preferred LLM assistant",
+                    "Copy and paste the following prompt:"
+                  ],
+                  "promptFile": "sequence-diagram-repair"
+                },
+                {
+                  "type": "interaction",
+                  "title": "Part 2: Find the Flaws",
+                  "time": 15,
+                  "guidelines": [
+                    "Copy the diagram from the Selected Context below and paste it into your LLM chat",
+                    "Describe which message or participant you think is wrong before asking for hints",
+                    "Think about message order, layer boundaries, and missing alt blocks",
+                    "Propose a corrected version of the problematic messages"
                   ]
                 }
               ]
@@ -177,6 +412,120 @@
       ]
     },
     {
+      "id": "test-palindrome-happy-path",
+      "name": "isPalindrome — happy path only",
+      "statement": "Tests isPalindrome with a single positive case ('racecar'). No negative case or edge cases are included.",
+      "description": "System (pseudocode):\nfunction isPalindrome(s):\n  return s.toLowerCase() == s.toLowerCase().reversed()\n\nTest under analysis:\ntest isPalindrome_givenKnownPalindrome_returnsTrue:\n  assert isPalindrome('racecar') == true\n\nThis is the only test written for isPalindrome.",
+      "context": "StringUtils module",
+      "personas": [],
+      "userStories": []
+    },
+    {
+      "id": "test-reverse-trivial",
+      "name": "reverseString — trivial assertions",
+      "statement": "Tests reverseString by checking the result is non-null and has the same length as the input. The actual reversal is never verified.",
+      "description": "System (pseudocode):\nfunction reverseString(s):\n  return s.split('').reverse().join('')\n\nTest under analysis:\ntest reverseString_returnsResult:\n  result = reverseString('hello')\n  assert result != null\n  assert result.length == 5",
+      "context": "StringUtils module",
+      "personas": [],
+      "userStories": []
+    },
+    {
+      "id": "test-palindrome-overcrowded",
+      "name": "isPalindrome — five cases in one test",
+      "statement": "Tests isPalindrome by asserting five different cases inside a single test function.",
+      "description": "System (pseudocode):\nfunction isPalindrome(s):\n  return s.toLowerCase() == s.toLowerCase().reversed()\n\nTest under analysis:\ntest isPalindrome_handlesAllCases:\n  assert isPalindrome('racecar') == true\n  assert isPalindrome('hello') == false\n  assert isPalindrome('') == true\n  assert isPalindrome('A') == true\n  assert isPalindrome('Racecar') == true",
+      "context": "StringUtils module",
+      "personas": [],
+      "userStories": []
+    },
+    {
+      "id": "test-cart-internal-state",
+      "name": "addItem — asserts on internal state",
+      "statement": "Tests addItem by directly inspecting the cart's internal items dictionary rather than using the public API.",
+      "description": "System (pseudocode):\nclass ShoppingCart:\n  items = {}   // dictionary: name -> price\n  function addItem(name, price): items[name] = price\n  function removeItem(name): delete items[name]\n  function getTotal(): return sum(items.values())\n\nTest under analysis:\ntest addItem_addsTwoItems:\n  cart = ShoppingCart()\n  cart.addItem('apple', 1.00)\n  cart.addItem('bread', 2.50)\n  assert cart.items['apple'] == 1.00\n  assert cart.items['bread'] == 2.50\n  assert len(cart.items) == 2",
+      "context": "ShoppingCart class",
+      "personas": [],
+      "userStories": []
+    },
+    {
+      "id": "test-cart-remove-chained",
+      "name": "removeItem — relies on getTotal to verify",
+      "statement": "Tests removeItem by checking the cart total drops to zero, rather than directly verifying the item was removed.",
+      "description": "System (pseudocode):\nclass ShoppingCart:\n  items = {}   // dictionary: name -> price\n  function addItem(name, price): items[name] = price\n  function removeItem(name): delete items[name]\n  function getTotal(): return sum(items.values())\n\nTest under analysis:\ntest removeItem_removesItem:\n  cart = ShoppingCart()\n  cart.addItem('apple', 1.00)\n  cart.removeItem('apple')\n  assert cart.getTotal() == 0",
+      "context": "ShoppingCart class",
+      "personas": [],
+      "userStories": []
+    },
+    {
+      "id": "bank-account-tdd",
+      "name": "Bank Account",
+      "statement": "A BankAccount class needs to be built from scratch using TDD. No implementation exists yet — your tests define the specification. The account supports deposits and withdrawals; overdrafts are not permitted.",
+      "description": "Write tests in pseudocode. Focus on specifying behaviour, not implementation. Use descriptive test names following the pattern: test [method]_[condition]_[expectedResult]",
+      "context": "TDD: write the test first, then implement the minimum code to make it pass, then refactor.",
+      "personas": [
+        {
+          "name": "Alex",
+          "role": "Junior Developer",
+          "description": "Will implement BankAccount using your tests as the specification. They will write only the minimum code needed to make each test pass."
+        }
+      ],
+      "userStories": [
+        {
+          "id": "bat-deposit",
+          "statement": "As a bank customer, I want to deposit money into my account so that my balance increases.",
+          "description": "The account starts with a zero balance. Multiple deposits should accumulate.",
+          "acceptanceCriteria": [
+            { "id": "bat-ac-1-1", "criteria": "Depositing a positive amount increases the balance by that exact amount" },
+            { "id": "bat-ac-1-2", "criteria": "Multiple deposits accumulate correctly" },
+            { "id": "bat-ac-1-3", "criteria": "Depositing zero does not change the balance" },
+            { "id": "bat-ac-1-4", "criteria": "Depositing a negative amount is rejected" }
+          ]
+        },
+        {
+          "id": "bat-withdraw",
+          "statement": "As a bank customer, I want to withdraw money from my account so that I can access my funds.",
+          "description": null,
+          "acceptanceCriteria": [
+            { "id": "bat-ac-2-1", "criteria": "Withdrawing an amount less than the balance decreases the balance correctly" },
+            { "id": "bat-ac-2-2", "criteria": "Withdrawing exactly the full balance results in a zero balance" },
+            { "id": "bat-ac-2-3", "criteria": "Withdrawing more than the balance is rejected (no overdraft)" },
+            { "id": "bat-ac-2-4", "criteria": "Withdrawing a negative amount is rejected" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "password-validator-tdd",
+      "name": "Password Validator",
+      "statement": "A PasswordValidator needs to be built from scratch using TDD. No implementation exists yet — your tests define the specification. It validates whether a password meets security requirements.",
+      "description": "Write tests in pseudocode. The validator returns true for valid passwords and false (or raises an error) for invalid ones.",
+      "context": "Password validation is a common security requirement. Boundary values matter here — students often miss the 'exactly 8 characters' case.",
+      "personas": [],
+      "userStories": [
+        {
+          "id": "pvt-length",
+          "statement": "As a user registering an account, I want clear feedback if my password is too short so that I know why my registration failed.",
+          "description": null,
+          "acceptanceCriteria": [
+            { "id": "pvt-ac-1-1", "criteria": "A password with fewer than 8 characters is invalid" },
+            { "id": "pvt-ac-1-2", "criteria": "A password with exactly 8 characters satisfies the length requirement" },
+            { "id": "pvt-ac-1-3", "criteria": "An empty string is invalid" }
+          ]
+        },
+        {
+          "id": "pvt-complexity",
+          "statement": "As a security administrator, I want passwords to contain a mix of character types so that accounts are resistant to brute-force attacks.",
+          "description": null,
+          "acceptanceCriteria": [
+            { "id": "pvt-ac-2-1", "criteria": "A password must contain at least one uppercase letter" },
+            { "id": "pvt-ac-2-2", "criteria": "A password must contain at least one digit" },
+            { "id": "pvt-ac-2-3", "criteria": "A password that meets both length and complexity rules is valid" },
+            { "id": "pvt-ac-2-4", "criteria": "A password that meets length but fails complexity rules is invalid" }
+          ]
+        }
+      ]
+    },
+    {
       "id": "mental-health-problem",
       "name": "Mental Health Assistance App",
       "statement": "Young adults aged 18–24 experiencing mental health difficulties need accessible, affordable, and stigma-free support in a way that respects their privacy and removes barriers to seeking help.",
@@ -223,6 +572,87 @@
           ]
         }
       ]
+    },
+    {
+      "id": "solid-invoice-manager",
+      "name": "Invoice Manager",
+      "statement": "A class description for an InvoiceManager has been written. It compiles and the developer says it does everything needed — but it contains SOLID violations that will make it hard to maintain.",
+      "description": "Class: InvoiceManager\nResponsibilities as described by the developer:\n- Holds a list of line items (product name, quantity, unit price)\n- addItem(name, quantity, price): adds a line item\n- calculateTotal(): sums all line items and applies a 10% discount if total > 100\n- formatAsPDF(): renders the invoice layout and returns a PDF file\n- saveToDatabase(connectionString): opens a DB connection and persists the invoice\n- sendByEmail(recipientAddress): connects to an SMTP server and emails the PDF to the customer\n\nAll five methods are on the same class.",
+      "context": "Two SOLID principles are violated here. Think about how many different reasons this class has to change, and what would happen if the company switched from MySQL to PostgreSQL, or from SMTP to SendGrid.",
+      "personas": [],
+      "userStories": []
+    },
+    {
+      "id": "solid-bird-hierarchy",
+      "name": "Bird Hierarchy",
+      "statement": "A class hierarchy models birds in a nature simulation. It looks clean at first glance — but substituting one subclass for another breaks the simulation. Find the violations.",
+      "description": "Class: Bird (base class)\n- name: String\n- fly(): void  — moves the bird upward in the simulation\n- eat(): void\n- sleep(): void\n\nClass: Eagle extends Bird\n- fly(): void  — soars to high altitude, works as expected\n\nClass: Penguin extends Bird\n- fly(): void  — throws UnsupportedOperationException(\"Penguins cannot fly\")\n\nUsage in simulation:\nfunction makeBirdFly(bird: Bird):\n  bird.fly()  // called for all birds in the flock",
+      "context": "One SOLID principle is violated. Think about what happens when the simulation calls makeBirdFly() with a Penguin. Is a Penguin truly substitutable for a Bird in all contexts?",
+      "personas": [],
+      "userStories": []
+    },
+    {
+      "id": "solid-order-service",
+      "name": "Order Service",
+      "statement": "A class description for an OrderService shows how it places orders. It works today with MySQL and email — but the team plans to support multiple databases and notification channels. Spot what will make that painful.",
+      "description": "Class: OrderService\nFields:\n- db: MySQLDatabase  (instantiated with new MySQLDatabase() inside the constructor)\n- notifier: EmailNotifier  (instantiated with new EmailNotifier() inside the constructor)\n\nMethods:\n- placeOrder(order: Order): void\n    1. Validates the order\n    2. Calls db.save(order) directly\n    3. Calls notifier.sendConfirmation(order) directly\n    4. Returns\n\nNote: MySQLDatabase and EmailNotifier are concrete classes, not interfaces.",
+      "context": "One SOLID principle is violated (with two instances of it). Think about what OrderService would need to change if the team switched to PostgreSQL, or wanted to add SMS notifications alongside email.",
+      "personas": [],
+      "userStories": []
+    },
+    {
+      "id": "seq-atm-withdrawal",
+      "name": "ATM Withdrawal",
+      "statement": "A sequence diagram models a cash withdrawal at an ATM. The developer says it covers the happy path — but it contains flaws that would cause problems in a real system.",
+      "description": "@startuml\nactor Customer\nparticipant ATM\nparticipant Account\n\nCustomer -> ATM: insertCard(cardNumber)\nATM -> Customer: requestPIN()\nCustomer -> ATM: enterPIN(pin)\nATM -> Account: withdraw(amount)\nAccount -> Customer: showBalance()\nATM -> Customer: dispenseCash()\n@enduml",
+      "context": "Three flaws are hidden in this diagram. Think about which participant should be talking to the Customer, what happens if the PIN is wrong or funds are insufficient, and whether the balance should be shown before or after cash is dispensed.",
+      "personas": [],
+      "userStories": []
+    },
+    {
+      "id": "seq-login-flow",
+      "name": "Login Flow",
+      "statement": "A sequence diagram models a user logging in to a web application. The developer says it captures the full flow — but messages are in the wrong order and a critical path is missing.",
+      "description": "@startuml\nactor User\nparticipant LoginController\nparticipant UserRepository\nparticipant SessionService\n\nUser -> LoginController: login(email, password)\nLoginController -> User: redirect(\"/dashboard\")\nLoginController -> UserRepository: findByEmail(email)\nUserRepository -> LoginController: user\nLoginController -> SessionService: createSession(user)\nSessionService -> LoginController: sessionToken\n@enduml",
+      "context": "Two flaws are hidden in this diagram. Think about when the redirect should happen relative to the other calls, and what should occur if the credentials are invalid.",
+      "personas": [],
+      "userStories": []
+    },
+    {
+      "id": "seq-order-checkout",
+      "name": "Order Checkout",
+      "statement": "A sequence diagram models the checkout flow in an e-commerce system. It looks mostly right — but one participant is calling in the wrong direction, and a return message is missing.",
+      "description": "@startuml\nactor Customer\nparticipant CheckoutController\nparticipant PaymentService\nparticipant OrderRepository\n\nCustomer -> CheckoutController: submitOrder(cart)\nCheckoutController -> PaymentService: charge(cart.total)\nPaymentService -> CheckoutController: paymentResult\nPaymentService -> CheckoutController: updateUI(\"Payment confirmed\")\nCheckoutController -> OrderRepository: save(order)\nCheckoutController -> Customer: orderConfirmation\n@enduml",
+      "context": "Two flaws are hidden in this diagram. Think about which layer PaymentService belongs to and whether it should be sending UI instructions, and whether every call has a matching return.",
+      "personas": [],
+      "userStories": []
+    },
+    {
+      "id": "design-library-system",
+      "name": "Library System",
+      "statement": "A class diagram for a Library system has been drafted. It compiles and the developer says it works — but it contains design flaws that will make it hard to maintain and extend.",
+      "description": "@startuml\nclass Library {\n  +searchBooks(title: String): List\n  +sendOverdueEmail(member: Member): void\n  +generateMonthlyReport(): PDF\n  +addBook(book: Book): void\n}\n\nclass Book {\n  +title: String\n  +author: String\n  +isbn: String\n}\n\nclass Member {\n  +name: String\n  +email: String\n  +borrowedBooks: List\n}\n\nLibrary --> Book\nLibrary --> Member\n@enduml",
+      "context": "Three flaws are hidden in this diagram. Hint: think about what responsibilities each class has, and whether Library should know about emails and PDFs at all.",
+      "personas": [],
+      "userStories": []
+    },
+    {
+      "id": "design-payment-processor",
+      "name": "Payment Processor",
+      "statement": "A class diagram for an e-commerce checkout has been drafted. It works for PayPal today, but the team plans to add Stripe and bank transfer next quarter. Spot what will make that painful.",
+      "description": "@startuml\nclass Order {\n  +id: String\n  +total: Float\n  +process(): void\n}\n\nclass PayPalPayment {\n  +charge(amount: Float): Boolean\n  +refund(amount: Float): Boolean\n}\n\nclass Receipt {\n  +orderId: String\n  +amountPaid: Float\n  +print(): void\n}\n\nOrder --> PayPalPayment\nOrder --> Receipt\n@enduml",
+      "context": "Two flaws are hidden in this diagram. Hint: what happens when the team wants to support a second payment provider? Which design principle protects against that kind of change?",
+      "personas": [],
+      "userStories": []
+    },
+    {
+      "id": "design-animal-hierarchy",
+      "name": "Animal Hierarchy",
+      "statement": "A class diagram models a zoo simulation. A junior developer noticed that Dog and Cat both have a speak() method and made Dog extend Cat to 'avoid duplication'. Find everything wrong with this.",
+      "description": "@startuml\nclass Cat {\n  +name: String\n  +speak(): String\n  +purr(): void\n}\n\nclass Dog {\n  +name: String\n  +speak(): String\n  +fetch(): void\n}\n\nclass ZooKeeper {\n  +feed(animal: Cat): void\n}\n\nDog --|> Cat\n@enduml",
+      "context": "Three flaws are hidden in this diagram. Hint: is a Dog really a Cat? What should both Dog and Cat share instead? And what does ZooKeeper's method signature say about its flexibility?",
+      "personas": [],
+      "userStories": []
     }
   ]
 }

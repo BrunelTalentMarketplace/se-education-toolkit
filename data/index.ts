@@ -53,11 +53,24 @@ export type Problem = {
   userStories: UserStoryExample[];
 };
 
+export type HierarchyLevel = "problem" | "userStory" | "acceptanceCriteria";
+
+export type TopicHierarchy = {
+  levels: HierarchyLevel[];
+  labels: Partial<Record<Exclude<HierarchyLevel, "problem">, string>>;
+};
+
+export const DEFAULT_HIERARCHY: TopicHierarchy = {
+  levels: ["problem", "userStory", "acceptanceCriteria"],
+  labels: { userStory: "User Story", acceptanceCriteria: "Acceptance Criteria" },
+};
+
 export type LabCategory = {
   area: string;
   topic: string;
   labs: Lab[];
   problems: Problem[];
+  hierarchy: TopicHierarchy;
 };
 
 export type PersonaOption = {
@@ -119,7 +132,11 @@ export const LABS: LabCategory[] = areasData.areas.flatMap((area) =>
       })
       .filter((p): p is Problem => p !== undefined);
 
-    return [{ area: area.name, topic: topic.name, labs, problems }];
+    const hierarchy: TopicHierarchy =
+      (topic as typeof topic & { hierarchy?: TopicHierarchy }).hierarchy
+      ?? DEFAULT_HIERARCHY;
+
+    return [{ area: area.name, topic: topic.name, labs, problems, hierarchy }];
   })
 );
 

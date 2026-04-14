@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, ChevronRight, CheckCircle, Circle } from "lucide-react";
-import { Problem } from "@/data";
+import { Problem, TopicHierarchy } from "@/data";
 
 interface CaseStudyHierarchyProps {
   problems: Problem[];
@@ -18,6 +18,7 @@ interface CaseStudyHierarchyProps {
     userStoryId: string;
     acceptanceCriteriaIds: string[];
   };
+  hierarchy: TopicHierarchy;
 }
 
 const CaseStudyHierarchy: React.FC<CaseStudyHierarchyProps> = ({
@@ -25,7 +26,13 @@ const CaseStudyHierarchy: React.FC<CaseStudyHierarchyProps> = ({
   onSelectionChange,
   onProblemChange,
   initialSelection,
+  hierarchy,
 }) => {
+  const showUserStory = hierarchy.levels.includes("userStory");
+  const showAcceptanceCriteria = hierarchy.levels.includes("acceptanceCriteria");
+  const userStoryLabel = hierarchy.labels.userStory ?? "User Story";
+  const userStoriesLabel = `${userStoryLabel}s`;
+  const acLabel = hierarchy.labels.acceptanceCriteria ?? "Acceptance Criteria";
   const [expandedProblems, setExpandedProblems] = useState<Set<string>>(new Set());
   const [expandedUserStories, setExpandedUserStories] = useState<Set<string>>(new Set());
   const [selectedProblemId, setSelectedProblemId] = useState<string>("");
@@ -149,11 +156,11 @@ const CaseStudyHierarchy: React.FC<CaseStudyHierarchyProps> = ({
                         {selectedProblemId === p.id ? "Deselect" : "Select this problem"}
                       </button>
 
-                      {/* User Stories — only shown once this problem is selected */}
-                      {selectedProblemId === p.id && (
+                      {/* Sub-levels — only shown once this problem is selected, and only when hierarchy requires them */}
+                      {selectedProblemId === p.id && showUserStory && (
                         <div className="border border-gray-200 rounded-lg">
                           <div className="p-2 border-b border-gray-100 bg-gray-50 rounded-t-lg">
-                            <h4 className="font-medium text-gray-700 text-sm">User Stories</h4>
+                            <h4 className="font-medium text-gray-700 text-sm">{userStoriesLabel}</h4>
                           </div>
                           {p.userStories.map((us) => (
                             <div key={us.id} className="border-t border-gray-100 first:border-t-0">
@@ -200,9 +207,9 @@ const CaseStudyHierarchy: React.FC<CaseStudyHierarchyProps> = ({
                                         {selectedUserStoryId === us.id ? "Deselect" : "Select this user story"}
                                       </button>
 
-                                      <div className="space-y-1">
+                                      {showAcceptanceCriteria && <div className="space-y-1">
                                         <h5 className="text-xs font-medium text-gray-700">
-                                          Acceptance Criteria:
+                                          {acLabel}:
                                         </h5>
                                         {us.acceptanceCriteria.map((ac) => (
                                           <button
@@ -224,7 +231,7 @@ const CaseStudyHierarchy: React.FC<CaseStudyHierarchyProps> = ({
                                             <span>{ac.criteria}</span>
                                           </button>
                                         ))}
-                                      </div>
+                                      </div>}
                                     </div>
                                   </motion.div>
                                 )}
@@ -268,9 +275,9 @@ const CaseStudyHierarchy: React.FC<CaseStudyHierarchyProps> = ({
             </div>
           )}
 
-          {selectedUserStory && (
+          {selectedUserStory && showUserStory && (
             <div>
-              <h4 className="font-medium text-gray-800 mb-2">User Story</h4>
+              <h4 className="font-medium text-gray-800 mb-2">{userStoryLabel}</h4>
               <div className="bg-green-50 p-3 rounded-lg">
                 <p className="text-sm font-medium text-gray-800 mb-1">{selectedUserStory.statement}</p>
                 {selectedUserStory.description && (
@@ -280,10 +287,10 @@ const CaseStudyHierarchy: React.FC<CaseStudyHierarchyProps> = ({
             </div>
           )}
 
-          {selectedAcceptanceCriteriaIds.length > 0 && (
+          {selectedAcceptanceCriteriaIds.length > 0 && showAcceptanceCriteria && (
             <div>
               <h4 className="font-medium text-gray-800 mb-2">
-                Acceptance Criteria ({selectedAcceptanceCriteriaIds.length} selected)
+                {acLabel} ({selectedAcceptanceCriteriaIds.length} selected)
               </h4>
               <div className="bg-purple-50 p-3 rounded-lg space-y-2">
                 {selectedAcceptanceCriteriaIds.map((id) => {
@@ -299,9 +306,9 @@ const CaseStudyHierarchy: React.FC<CaseStudyHierarchyProps> = ({
             </div>
           )}
 
-          {!selectedProblem && !selectedUserStory && selectedAcceptanceCriteriaIds.length === 0 && (
+          {!selectedProblem && (
             <div className="text-center text-gray-500 py-8">
-              <p>Select items from the hierarchy to preview content</p>
+              <p>Select a problem to preview content</p>
             </div>
           )}
         </div>

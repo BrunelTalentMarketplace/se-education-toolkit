@@ -1,6 +1,6 @@
 import { Copy, Clock, Check } from "lucide-react";
 import { useState } from "react";
-import { Step } from "@/data/index";
+import { Step, TopicHierarchy, DEFAULT_HIERARCHY } from "@/data/index";
 import { Problem, UserStoryExample, AcceptanceCriteria } from "@/data";
 
 interface LabStepProps {
@@ -9,11 +9,11 @@ interface LabStepProps {
   copyToClipboard: (text: string) => void;
   caseStudy?: {
     problem: Problem;
-    userStory: UserStoryExample;
+    userStory: UserStoryExample | null;
     acceptanceCriteria: AcceptanceCriteria[];
   } | null;
   isSecondStep?: boolean;
-  topic?: string;
+  hierarchy?: TopicHierarchy;
   personaIntro?: string;
 }
 
@@ -23,9 +23,14 @@ const LabStep: React.FC<LabStepProps> = ({
   copyToClipboard,
   caseStudy,
   isSecondStep,
-  topic,
+  hierarchy,
   personaIntro,
 }) => {
+  const resolvedHierarchy = hierarchy ?? DEFAULT_HIERARCHY;
+  const showUserStory = resolvedHierarchy.levels.includes("userStory");
+  const showAC = resolvedHierarchy.levels.includes("acceptanceCriteria");
+  const userStoryLabel = resolvedHierarchy.labels.userStory ?? "User Story";
+  const acLabel = resolvedHierarchy.labels.acceptanceCriteria ?? "Acceptance Criteria";
   const [copied, setCopied] = useState(false);
   const [copiedSummary, setCopiedSummary] = useState(false);
 
@@ -111,9 +116,7 @@ const LabStep: React.FC<LabStepProps> = ({
         <div className="mb-3 sm:mb-4">
           <div className="flex justify-between items-center mb-1 sm:mb-2">
             <h4 className="font-medium text-gray-700 text-sm sm:text-base">
-              {isSecondStep && caseStudy
-                ? `${topic === "user_stories_and_acceptance_criteria" ? "User Story" : "Requirements Engineering"} Teacher Prompt`
-                : "Prompt"}
+              {isSecondStep && caseStudy ? `${userStoryLabel} Teacher Prompt` : "Prompt"}
             </h4>
             <button
               onClick={() => handleCopy(prompt)}
@@ -143,7 +146,11 @@ const LabStep: React.FC<LabStepProps> = ({
       {isSecondStep && !caseStudy && (
         <div className="mt-3 sm:mt-4 bg-amber-50 border border-amber-200 rounded-md px-3 sm:px-4 py-3">
           <p className="text-xs sm:text-sm text-amber-800">
-            Select a problem, user story, and acceptance criteria above to unlock this step.
+            {resolvedHierarchy.levels.length === 1
+              ? "Select a problem above to unlock this step."
+              : resolvedHierarchy.levels.length === 2
+              ? `Select a problem and ${userStoryLabel.toLowerCase()} above to unlock this step.`
+              : `Select a problem, ${userStoryLabel.toLowerCase()}, and ${acLabel.toLowerCase()} above to unlock this step.`}
           </p>
         </div>
       )}
@@ -162,8 +169,10 @@ const LabStep: React.FC<LabStepProps> = ({
                   ...(problem.personas.length > 0
                     ? [`Personas:\n${problem.personas.map((p, i) => `${i + 1}. ${p.name} (${p.role}): ${p.description}`).join("\n")}`]
                     : []),
-                  `Selected ${topic === "use_cases" ? "Use Case Scenario" : "User Story"}: ${userStory.statement}`,
-                  `Selected Acceptance Criteria:\n${acceptanceCriteria.map((ac, i) => `${i + 1}. ${ac.criteria}`).join("\n")}`,
+                  ...(userStory && showUserStory ? [`Selected ${userStoryLabel}: ${userStory.statement}`] : []),
+                  ...(acceptanceCriteria.length > 0 && showAC
+                    ? [`Selected ${acLabel}:\n${acceptanceCriteria.map((ac, i) => `${i + 1}. ${ac.criteria}`).join("\n")}`]
+                    : []),
                 ];
                 handleCopySummary(lines.join("\n\n"));
               }}
@@ -213,20 +222,24 @@ const LabStep: React.FC<LabStepProps> = ({
                 </ul>
               </div>
             )}
-            <div>
-              <p className="text-xs sm:text-sm text-blue-800 font-medium mb-0.5">
-                Selected {topic === "use_cases" ? "Use Case Scenario" : "User Story"}:
-              </p>
-              <p className="text-xs sm:text-sm text-blue-800">{caseStudy.userStory.statement}</p>
-            </div>
-            <div>
-              <p className="text-xs sm:text-sm text-blue-800 font-medium mb-0.5">Selected Acceptance Criteria:</p>
-              <ul className="space-y-0.5">
-                {caseStudy.acceptanceCriteria.map((ac, i) => (
-                  <li key={i} className="text-xs sm:text-sm text-blue-800">{i + 1}. {ac.criteria}</li>
-                ))}
-              </ul>
-            </div>
+            {caseStudy.userStory && showUserStory && (
+              <div>
+                <p className="text-xs sm:text-sm text-blue-800 font-medium mb-0.5">
+                  Selected {userStoryLabel}:
+                </p>
+                <p className="text-xs sm:text-sm text-blue-800">{caseStudy.userStory.statement}</p>
+              </div>
+            )}
+            {caseStudy.acceptanceCriteria.length > 0 && showAC && (
+              <div>
+                <p className="text-xs sm:text-sm text-blue-800 font-medium mb-0.5">Selected {acLabel}:</p>
+                <ul className="space-y-0.5">
+                  {caseStudy.acceptanceCriteria.map((ac, i) => (
+                    <li key={i} className="text-xs sm:text-sm text-blue-800">{i + 1}. {ac.criteria}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         </div>
       )}

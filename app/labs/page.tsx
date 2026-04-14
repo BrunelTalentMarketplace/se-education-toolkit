@@ -6,7 +6,7 @@ import { Filter, Download, Search } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import LabStep from "@/components/labs/LabStep";
-import { AcceptanceCriteria } from "@/data";
+import { AcceptanceCriteria, TopicHierarchy, DEFAULT_HIERARCHY } from "@/data";
 import { filterLabs } from "@/lib/lab-utils";
 import { getPersonas } from "@/lib/lab-utils";
 import SelectFilter from "@/components/labs/SelectFilter";
@@ -98,7 +98,7 @@ const LabsPage = () => {
     return "";
   }, [explicitPersona, selectedArea, selectedTopic, personas]);
 
-  const { filteredLabs, selectedProblem } = useMemo(() => {
+  const { filteredLabs, selectedProblem, topicHierarchy } = useMemo(() => {
     if (selectedArea && selectedTopic) {
       const result = filterLabs(
         selectedArea,
@@ -108,27 +108,36 @@ const LabsPage = () => {
       return {
         filteredLabs: result.labs,
         selectedProblem: result.selectedProblem,
+        topicHierarchy: result.hierarchy,
       };
     }
-    return { filteredLabs: [], selectedProblem: null };
+    return { filteredLabs: [], selectedProblem: null, topicHierarchy: DEFAULT_HIERARCHY };
   }, [selectedArea, selectedTopic, hierarchySelection.problemId]);
 
   const selectedHierarchicalData = useMemo(() => {
-    if (!selectedProblem || !hierarchySelection.userStoryId || hierarchySelection.acceptanceCriteriaIds.length === 0) return null;
+    if (!selectedProblem) return null;
+    const levels = topicHierarchy.levels;
 
+    if (!levels.includes("userStory")) {
+      return { problem: selectedProblem, userStory: null, acceptanceCriteria: [] as AcceptanceCriteria[] };
+    }
+
+    if (!hierarchySelection.userStoryId) return null;
     const userStory = selectedProblem.userStories.find(us => us.id === hierarchySelection.userStoryId);
+    if (!userStory) return null;
+
+    if (!levels.includes("acceptanceCriteria")) {
+      return { problem: selectedProblem, userStory, acceptanceCriteria: [] as AcceptanceCriteria[] };
+    }
+
+    if (hierarchySelection.acceptanceCriteriaIds.length === 0) return null;
     const acceptanceCriteria = hierarchySelection.acceptanceCriteriaIds
-      .map(id => userStory?.acceptanceCriteria.find(ac => ac.id === id))
+      .map(id => userStory.acceptanceCriteria.find(ac => ac.id === id))
       .filter((ac): ac is AcceptanceCriteria => ac !== undefined);
+    if (acceptanceCriteria.length === 0) return null;
 
-    if (!userStory || acceptanceCriteria.length === 0) return null;
-
-    return {
-      problem: selectedProblem,
-      userStory,
-      acceptanceCriteria,
-    };
-  }, [selectedProblem, hierarchySelection]);
+    return { problem: selectedProblem, userStory, acceptanceCriteria };
+  }, [selectedProblem, hierarchySelection, topicHierarchy]);
 
   const selectedLab = filteredLabs.length > 0 ? filteredLabs[0] : null;
   const personaIntro = selectedArea ? getPersonaIntro(selectedArea, defaultPersona) : null;
@@ -211,15 +220,16 @@ const LabsPage = () => {
       let caseStudyHTML = "";
       if (isSecondStep && selectedHierarchicalData) {
         const { problem, userStory, acceptanceCriteria } = selectedHierarchicalData;
-        const userStoryLabel = selectedTopic === "use_cases" ? "Use Case Scenario" : "User Story";
+        const userStoryLabel = topicHierarchy.labels.userStory ?? "User Story";
+        const acLabel = topicHierarchy.labels.acceptanceCriteria ?? "Acceptance Criteria";
         const caseStudyText = [
           `Problem Statement: ${problem.statement}`,
           ...(problem.description ? [`Description: ${problem.description}`] : []),
           ...(problem.context ? [`Context: ${problem.context}`] : []),
-          `Personas:\n${problem.personas.map((p, i) => `${i + 1}. ${p.name} (${p.role}): ${p.description}`).join("\n")}`,
-          `Selected ${userStoryLabel}: ${userStory.statement}`,
-          ...(userStory.description ? [`Description: ${userStory.description}`] : []),
-          `Selected Acceptance Criteria:\n${acceptanceCriteria.map((ac, i) => `${i + 1}. ${ac.criteria}`).join("\n")}`,
+          ...(problem.personas.length > 0 ? [`Personas:\n${problem.personas.map((p, i) => `${i + 1}. ${p.name} (${p.role}): ${p.description}`).join("\n")}`] : []),
+          ...(userStory ? [`Selected ${userStoryLabel}: ${userStory.statement}`] : []),
+          ...(userStory?.description ? [`Description: ${userStory.description}`] : []),
+          ...(acceptanceCriteria.length > 0 ? [`Selected ${acLabel}:\n${acceptanceCriteria.map((ac, i) => `${i + 1}. ${ac.criteria}`).join("\n")}`] : []),
         ].join("\n\n");
         caseStudyHTML = `<p>Provide this information for analysis:</p>
           <div class="prompt-container">
@@ -383,6 +393,7 @@ const LabsPage = () => {
               onSelectionChange={handleHierarchySelectionChange}
               onProblemChange={handleProblemChange}
               initialSelection={hierarchySelection}
+              hierarchy={topicHierarchy}
             />
           </motion.div>
         )}
@@ -442,7 +453,7 @@ const LabsPage = () => {
                   copyToClipboard={copyToClipboard}
                   caseStudy={step.type === "interaction" ? selectedHierarchicalData : null}
                   isSecondStep={step.type === "interaction"}
-                  topic={selectedTopic}
+                  hierarchy={topicHierarchy}
                   personaIntro={personaIntro}
                 />
               ))}
