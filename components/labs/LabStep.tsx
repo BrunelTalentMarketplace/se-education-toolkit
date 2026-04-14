@@ -140,6 +140,14 @@ const LabStep: React.FC<LabStepProps> = ({
         </div>
       )}
 
+      {isSecondStep && !caseStudy && (
+        <div className="mt-3 sm:mt-4 bg-amber-50 border border-amber-200 rounded-md px-3 sm:px-4 py-3">
+          <p className="text-xs sm:text-sm text-amber-800">
+            Select a problem, user story, and acceptance criteria above to unlock this step.
+          </p>
+        </div>
+      )}
+
       {isSecondStep && caseStudy && (
         <div className="mt-3 sm:mt-4 bg-blue-50 rounded-md overflow-hidden">
           <div className="flex justify-between items-center px-2 sm:px-3 pt-2 sm:pt-3 mb-2">

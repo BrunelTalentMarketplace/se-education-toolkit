@@ -7,6 +7,7 @@ export type Topic = typeof areasData.areas[number]['topics'][number]['name'];
 export type PersonaType = typeof areasData.personas[number]['id'];
 
 export type Step = {
+  type?: "setup" | "interaction";
   title: string;
   time: number;
   setup?: string[];
@@ -76,7 +77,7 @@ export const GAMES: Lab[] = areasData.areas.flatMap((area) =>
         const prompt: string | null = promptFile
           ? (PROMPTS[promptFile] ?? null)
           : (('prompt' in rest ? rest.prompt : null) as string | null);
-        return { ...rest, prompt };
+        return { ...rest, prompt, type: rest.type as Step["type"] };
       }),
     }))
   )

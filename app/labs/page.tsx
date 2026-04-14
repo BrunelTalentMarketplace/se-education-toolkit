@@ -192,7 +192,7 @@ const LabsPage = () => {
     let sectionsHTML = "";
 
     selectedLab.steps.forEach((step, index) => {
-      const isSecondStep = index === 1;
+      const isSecondStep = step.type === "interaction";
 
       const setupHTML = step.setup
         ? `<ol>${step.setup.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ol>`
@@ -335,9 +335,8 @@ const LabsPage = () => {
             AI-Powered Labs
           </h1>
           <p className="text-sm sm:text-base text-gray-600 mt-3 sm:mt-4 max-w-2xl mx-auto px-2">
-            Select your area and topic to access interactive learning materials.
-            Persona and case study will be automatically selected, but you can
-            customize them if needed.
+            Select your area, topic, and persona to load a lab. Then choose a
+            problem and user story to provide context for Part 2.
           </p>
         </motion.div>
 
@@ -398,7 +397,9 @@ const LabsPage = () => {
             <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2">
               No games available for this persona yet
             </h3>
-            <p className="text-sm sm:text-base text-gray-600">Stay tuned!</p>
+            <p className="text-sm sm:text-base text-gray-600">
+              Try Tutor or Student instead, or stay tuned for more content.
+            </p>
           </motion.div>
         )}
 
@@ -433,14 +434,14 @@ const LabsPage = () => {
             </div>
 
             <div className="space-y-6 sm:space-y-8">
-              {selectedLab.steps.map((step, index) => (
+              {selectedLab.steps.map((step, i) => (
                 <LabStep
-                  key={index}
+                  key={i}
                   step={step}
-                  index={index}
+                  index={i}
                   copyToClipboard={copyToClipboard}
-                  caseStudy={index === 1 ? selectedHierarchicalData : null}
-                  isSecondStep={index === 1}
+                  caseStudy={step.type === "interaction" ? selectedHierarchicalData : null}
+                  isSecondStep={step.type === "interaction"}
                   topic={selectedTopic}
                   personaIntro={personaIntro}
                 />
