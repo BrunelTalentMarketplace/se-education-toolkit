@@ -11,6 +11,7 @@ import { filterLabs } from "@/lib/lab-utils";
 import { getPersonas } from "@/lib/lab-utils";
 import SelectFilter from "@/components/labs/SelectFilter";
 import { getTopics, getAreas, getProblems } from "@/lib/lab-utils";
+import { getPersonaIntro } from "@/data";
 import CaseStudyHierarchy from "@/components/labs/CaseStudyHierarchy";
 
 const findMatchingOption = (options: string[], urlValue: string): string => {
@@ -130,7 +131,7 @@ const LabsPage = () => {
   }, [selectedProblem, hierarchySelection]);
 
   const selectedLab = filteredLabs.length > 0 ? filteredLabs[0] : null;
-  const personaIntro = selectedLab?.personaIntros[defaultPersona] ?? null;
+  const personaIntro = selectedArea ? getPersonaIntro(selectedArea, defaultPersona) : null;
 
   const updateFilters = (updates: Record<string, string>) => {
     setFilters((prev) => {
@@ -197,7 +198,9 @@ const LabsPage = () => {
         ? `<ol>${step.setup.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ol>`
         : "";
 
-      const promptText = step.prompt?.replace("{{CASE_STUDY_DATA}}", "") ?? null;
+      const promptText = step.prompt
+        ?.replace("{{PERSONA_INTRO}}", personaIntro ?? "")
+        ?.replace("{{CASE_STUDY_DATA}}", "") ?? null;
       const promptHTML = promptText
         ? `<div class="prompt-container">
             <button class="copy-button" onclick="copyPrompt(this)">Copy Prompt</button>

@@ -167,7 +167,7 @@ const CaseStudyHierarchy: React.FC<CaseStudyHierarchyProps> = ({
                                   ) : (
                                     <Circle size={14} className="text-gray-400 flex-shrink-0" />
                                   )}
-                                  <span className="text-left text-sm truncate">{us.statement}</span>
+                                  <span className="text-left text-sm">{us.statement}</span>
                                 </div>
                                 {expandedUserStories.has(us.id) ? (
                                   <ChevronDown size={14} className="flex-shrink-0 ml-2" />

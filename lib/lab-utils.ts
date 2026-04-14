@@ -24,7 +24,7 @@ export const getTopics = (area: string): string[] => {
 };
 
 export const getPersonas = (): string[] => {
-  return PERSONAS as string[];
+  return PERSONAS.map((p) => p.id);
 };
 
 export const getProblems = (area: string, topic: string): Problem[] => {

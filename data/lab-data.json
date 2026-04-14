@@ -2,6 +2,11 @@
   "areas": [
     {
       "name": "requirements engineering",
+      "personaIntros": {
+        "tutor": "I want to act as a Requirements Engineering teacher",
+        "student": "I want you to act as a fellow student taking the Requirements Engineering course",
+        "professional": "I want you to act as an experienced software requirements engineer"
+      },
       "topics": [
         {
           "name": "user_stories_and_acceptance_criteria",
@@ -10,12 +15,7 @@
             {
               "id": "user_story_tutor",
               "title": "User Story Writing Practice",
-              "personaIntros": {
-                "tutor": "I want to act as a Requirements Engineering teacher who will help me practice writing functional requirements.",
-                "student": "I want you to act as a fellow student taking the Requirements Engineering course, and we are working on practice writing functional requirements."
-              },
               "description": "Learn to write effective user stories with guided feedback",
-              "downloadFile": "/files/lab-sheets/User-Story-teacher-beginner.html",
               "steps": [
                 {
                   "title": "Part 1: Setup",
@@ -45,17 +45,21 @@
             {
               "id": "use_case_tutor",
               "title": "Use Case Analysis Practice",
-              "personaIntros": {
-                "tutor": "I want you to act as an expert Requirements Engineering teacher helping me analyze the main flow of use cases."
-              },
               "description": "Learn to analyze and improve use case flows",
-              "downloadFile": "/files/lab-sheets/ReqEngineering-teacher-beginner.html",
               "steps": [
                 {
                   "title": "Part 1: Setup",
                   "time": 5,
                   "setup": ["Open your preferred LLM assistant"],
                   "promptFile": "use-case-tutor"
+                },
+                {
+                  "title": "Part 2: Game Interaction",
+                  "time": 10,
+                  "guidelines": [
+                    "Analyze each use case step carefully",
+                    "Try finding issues before requesting hints"
+                  ]
                 }
               ]
             }
@@ -64,7 +68,12 @@
       ]
     },
     {
-      "name": "coding maintainance",
+      "name": "coding maintenance",
+      "personaIntros": {
+        "tutor": "I want to act as a software engineering teacher",
+        "student": "I want you to act as a fellow student learning software engineering best practices",
+        "professional": "I want you to act as a senior software engineer"
+      },
       "topics": [
         {
           "name": "code_review",
@@ -79,7 +88,11 @@
       ]
     }
   ],
-  "personas": ["tutor", "student", "professional"],
+  "personas": [
+    { "id": "tutor",        "label": "Tutor" },
+    { "id": "student",      "label": "Student" },
+    { "id": "professional", "label": "Professional" }
+  ],
   "problems": [
     {
       "id": "food-sharing-problem",

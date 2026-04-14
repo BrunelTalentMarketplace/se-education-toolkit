@@ -1,4 +1,4 @@
-export default `{{PERSONA_INTRO}}
+export default `{{PERSONA_INTRO}} helping me analyze the main flow of use cases.
 
 Points System:
 - Finding an issue without hints: +15 points

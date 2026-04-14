@@ -4,7 +4,7 @@ import { PROMPTS } from './prompts';
 // Types derived from JSON shape
 export type Area = typeof areasData.areas[number]['name'];
 export type Topic = typeof areasData.areas[number]['topics'][number]['name'];
-export type PersonaType = typeof areasData.personas[number];
+export type PersonaType = typeof areasData.personas[number]['id'];
 
 export type Step = {
   title: string;
@@ -19,11 +19,9 @@ export type Lab = {
   id: string;
   area: Area;
   topic: Topic;
-  personaIntros: Record<string, string>;
   title: string;
   description?: string;
   steps: Step[];
-  downloadFile?: string;
 };
 
 export type Persona = {
@@ -61,6 +59,11 @@ export type LabCategory = {
   problems: Problem[];
 };
 
+export type PersonaOption = {
+  id: string;
+  label: string;
+};
+
 // Build flat GAMES array by injecting area and topic from the nested structure
 export const GAMES: Lab[] = areasData.areas.flatMap((area) =>
   area.topics.flatMap((topic) =>
@@ -95,6 +98,12 @@ export const getTopicsForArea = (area: Area): Topic[] =>
 export const getProblemById = (id: string): Problem | undefined =>
   PROBLEMS.find((p) => p.id === id);
 
+export const getPersonaIntro = (area: string, persona: string): string | null => {
+  const areaData = areasData.areas.find((a) => a.name === area);
+  if (!areaData) return null;
+  return (areaData.personaIntros as Record<string, string>)[persona] ?? null;
+};
+
 // One LabCategory per (area, topic) that has at least one game
 export const LABS: LabCategory[] = areasData.areas.flatMap((area) =>
   area.topics.flatMap((topic) => {
@@ -113,7 +122,19 @@ export const LABS: LabCategory[] = areasData.areas.flatMap((area) =>
   })
 );
 
+// Dev-time validation: warn if personaIntros keys don't match known persona ids
+if (process.env.NODE_ENV !== 'production') {
+  const personaIds = new Set(areasData.personas.map((p) => p.id));
+  areasData.areas.forEach((area) => {
+    Object.keys(area.personaIntros).forEach((key) => {
+      if (!personaIds.has(key)) {
+        console.warn(`Area "${area.name}" personaIntros references unknown persona id "${key}"`);
+      }
+    });
+  });
+}
+
 export const AREAS: Area[] = areasData.areas.map((a) => a.name);
-export const PERSONAS: PersonaType[] = areasData.personas;
+export const PERSONAS: PersonaOption[] = areasData.personas;
 
 export default { GAMES };
