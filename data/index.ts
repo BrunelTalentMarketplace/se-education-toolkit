@@ -19,7 +19,7 @@ export type Lab = {
   id: string;
   area: Area;
   topic: Topic;
-  persona: PersonaType;
+  personaIntros: Record<string, string>;
   title: string;
   description?: string;
   steps: Step[];
@@ -57,7 +57,6 @@ export type Problem = {
 export type LabCategory = {
   area: string;
   topic: string;
-  persona: string;
   labs: Lab[];
   problems: Problem[];
 };
@@ -65,11 +64,11 @@ export type LabCategory = {
 // Build flat GAMES array by injecting area and topic from the nested structure
 export const GAMES: Lab[] = areasData.areas.flatMap((area) =>
   area.topics.flatMap((topic) =>
-    topic.games.map((lab) => ({
-      ...lab,
+    topic.games.map((game) => ({
+      ...game,
       area: area.name as Area,
       topic: topic.name as Topic,
-      steps: lab.steps.map((step) => {
+      steps: game.steps.map((step) => {
         const { promptFile, ...rest } = step as typeof step & { promptFile?: string };
         const prompt: string | null = promptFile
           ? (PROMPTS[promptFile] ?? null)
@@ -87,8 +86,8 @@ export const USER_STORIES: UserStoryExample[] = PROBLEMS.flatMap((p) => p.userSt
 export const getGameById = (id: string): Lab | undefined =>
   GAMES.find((g) => g.id === id);
 
-export const getGameByFilters = (area: string, topic: string, persona: string): Lab[] =>
-  GAMES.filter((g) => g.area === area && g.topic === topic && g.persona === persona);
+export const getGameByFilters = (area: string, topic: string): Lab[] =>
+  GAMES.filter((g) => g.area === area && g.topic === topic);
 
 export const getTopicsForArea = (area: Area): Topic[] =>
   areasData.areas.find((a) => a.name === area)?.topics.map((t) => t.name as Topic) ?? [];
@@ -96,16 +95,11 @@ export const getTopicsForArea = (area: Area): Topic[] =>
 export const getProblemById = (id: string): Problem | undefined =>
   PROBLEMS.find((p) => p.id === id);
 
-// Build LABS by deriving the topic → problem association from each problem's topics field.
-// One LabCategory per (area, topic, persona) combination that has at least one game.
+// One LabCategory per (area, topic) that has at least one game
 export const LABS: LabCategory[] = areasData.areas.flatMap((area) =>
   area.topics.flatMap((topic) => {
-    const personas = [
-      ...new Set(
-        GAMES.filter((g) => g.area === area.name && g.topic === topic.name).map((g) => g.persona)
-      ),
-    ];
-    if (personas.length === 0) return [];
+    const labs = getGameByFilters(area.name, topic.name);
+    if (labs.length === 0) return [];
 
     const problems = topic.problemIds
       .map((id) => {
@@ -115,13 +109,7 @@ export const LABS: LabCategory[] = areasData.areas.flatMap((area) =>
       })
       .filter((p): p is Problem => p !== undefined);
 
-    return personas.map((persona) => ({
-      area: area.name,
-      topic: topic.name,
-      persona,
-      labs: getGameByFilters(area.name, topic.name, persona),
-      problems,
-    }));
+    return [{ area: area.name, topic: topic.name, labs, problems }];
   })
 );
 

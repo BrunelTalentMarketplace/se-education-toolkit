@@ -1,4 +1,4 @@
-export default `I want you to act as an expert Requirements Engineering teacher helping me analyze the main flow of use cases.
+export default `{{PERSONA_INTRO}}
 
 Points System:
 - Finding an issue without hints: +15 points

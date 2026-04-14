@@ -9,8 +9,11 @@
           "games": [
             {
               "id": "user_story_tutor",
-              "persona": "tutor",
               "title": "User Story Writing Practice",
+              "personaIntros": {
+                "tutor": "I want to act as a Requirements Engineering teacher who will help me practice writing functional requirements.",
+                "student": "I want you to act as a fellow student taking the Requirements Engineering course, and we are working on practice writing functional requirements."
+              },
               "description": "Learn to write effective user stories with guided feedback",
               "downloadFile": "/files/lab-sheets/User-Story-teacher-beginner.html",
               "steps": [
@@ -41,8 +44,10 @@
           "games": [
             {
               "id": "use_case_tutor",
-              "persona": "tutor",
               "title": "Use Case Analysis Practice",
+              "personaIntros": {
+                "tutor": "I want you to act as an expert Requirements Engineering teacher helping me analyze the main flow of use cases."
+              },
               "description": "Learn to analyze and improve use case flows",
               "downloadFile": "/files/lab-sheets/ReqEngineering-teacher-beginner.html",
               "steps": [

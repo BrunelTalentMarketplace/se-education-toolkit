@@ -98,11 +98,10 @@ const LabsPage = () => {
   }, [explicitPersona, selectedArea, selectedTopic, personas]);
 
   const { filteredLabs, selectedProblem } = useMemo(() => {
-    if (selectedArea && selectedTopic && defaultPersona) {
+    if (selectedArea && selectedTopic) {
       const result = filterLabs(
         selectedArea,
         selectedTopic,
-        defaultPersona,
         hierarchySelection.problemId
       );
       return {
@@ -111,7 +110,7 @@ const LabsPage = () => {
       };
     }
     return { filteredLabs: [], selectedProblem: null };
-  }, [selectedArea, selectedTopic, defaultPersona, hierarchySelection.problemId]);
+  }, [selectedArea, selectedTopic, hierarchySelection.problemId]);
 
   const selectedHierarchicalData = useMemo(() => {
     if (!selectedProblem || !hierarchySelection.userStoryId || hierarchySelection.acceptanceCriteriaIds.length === 0) return null;
@@ -131,6 +130,7 @@ const LabsPage = () => {
   }, [selectedProblem, hierarchySelection]);
 
   const selectedLab = filteredLabs.length > 0 ? filteredLabs[0] : null;
+  const personaIntro = selectedLab?.personaIntros[defaultPersona] ?? null;
 
   const updateFilters = (updates: Record<string, string>) => {
     setFilters((prev) => {
@@ -385,7 +385,21 @@ const LabsPage = () => {
           </motion.div>
         )}
 
-        {selectedLab ? (
+        {selectedLab && !personaIntro && (
+          <motion.div
+            className="bg-white/30 backdrop-blur-sm border border-white/20 rounded-xl p-6 sm:p-8 text-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2">
+              No games available for this persona yet
+            </h3>
+            <p className="text-sm sm:text-base text-gray-600">Stay tuned!</p>
+          </motion.div>
+        )}
+
+        {selectedLab && personaIntro ? (
           <motion.div
             className="bg-white/30 backdrop-blur-sm border border-white/20 rounded-xl p-4 sm:p-5 md:p-6 shadow-sm"
             initial={{ opacity: 0, y: 20 }}
@@ -425,11 +439,12 @@ const LabsPage = () => {
                   caseStudy={index === 1 ? selectedHierarchicalData : null}
                   isSecondStep={index === 1}
                   topic={selectedTopic}
+                  personaIntro={personaIntro}
                 />
               ))}
             </div>
           </motion.div>
-        ) : (
+        ) : !selectedLab ? (
           <motion.div
             className="bg-white/30 backdrop-blur-sm border border-white/20 rounded-xl p-6 sm:p-8 text-center"
             initial={{ opacity: 0, y: 20 }}
@@ -450,7 +465,7 @@ const LabsPage = () => {
               lab. You can customize the persona and case study afterwards.
             </p>
           </motion.div>
-        )}
+        ) : null}
       </div>
     </main>
   );

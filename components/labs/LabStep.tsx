@@ -14,6 +14,7 @@ interface LabStepProps {
   } | null;
   isSecondStep?: boolean;
   topic?: string;
+  personaIntro?: string;
 }
 
 const LabStep: React.FC<LabStepProps> = ({
@@ -23,6 +24,7 @@ const LabStep: React.FC<LabStepProps> = ({
   caseStudy,
   isSecondStep,
   topic,
+  personaIntro,
 }) => {
   const [copied, setCopied] = useState(false);
   const [copiedSummary, setCopiedSummary] = useState(false);
@@ -40,7 +42,9 @@ const LabStep: React.FC<LabStepProps> = ({
   };
 
   const getPrompt = () => {
-    return step.prompt?.replace("{{CASE_STUDY_DATA}}", "") ?? null;
+    return step.prompt
+      ?.replace("{{PERSONA_INTRO}}", personaIntro ?? "")
+      ?.replace("{{CASE_STUDY_DATA}}", "") ?? null;
   };
 
   const prompt = getPrompt();

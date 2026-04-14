@@ -1,4 +1,4 @@
-import { Lab, LabCategory, Problem } from "@/data";
+import { Lab, LabCategory, Problem, PERSONAS } from "@/data";
 import { LABS } from "@/data";
 
 export const getAreas = (): string[] => {
@@ -24,7 +24,7 @@ export const getTopics = (area: string): string[] => {
 };
 
 export const getPersonas = (): string[] => {
-  return [...new Set(LABS.map((lab: LabCategory) => lab.persona.toLowerCase()))];
+  return PERSONAS as string[];
 };
 
 export const getProblems = (area: string, topic: string): Problem[] => {
@@ -44,16 +44,13 @@ export const formatTopicForQuery = (topic: string): string => {
 export const filterLabs = (
   area: string,
   topic: string,
-  persona: string,
   problemId: string
 ): { labs: Lab[]; selectedProblem: Problem | null } => {
   const formattedTopic = formatTopicForQuery(topic);
 
   const matchingCategory = LABS.find(
     (lab: LabCategory) =>
-      lab.area === area.toLowerCase() &&
-      lab.topic === formattedTopic &&
-      lab.persona === persona.toLowerCase()
+      lab.area === area.toLowerCase() && lab.topic === formattedTopic
   );
 
   if (!matchingCategory) return { labs: [], selectedProblem: null };

@@ -7,8 +7,8 @@ export const useGameSelection = () => {
   const [selectedProblem, setSelectedProblem] = useState<Problem | null>(null);
 
   const selectByFilters = useCallback(
-    (area: string, topic: string, persona: string) => {
-      const games = getGameByFilters(area, topic, persona);
+    (area: string, topic: string) => {
+      const games = getGameByFilters(area, topic);
       if (games.length > 0) {
         setSelectedGame(games[0]);
         return games;
