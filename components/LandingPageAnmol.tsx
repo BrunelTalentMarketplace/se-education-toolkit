@@ -3,9 +3,6 @@
 import React from "react";
 import Link from "next/link";
 
-import FeaturesAnmol from "./FeaturesAnmol";
-import Assessments from "./Assessments";
-import PersonasPageAnmol from "./PersonasPageAnmol";
 
 const LandingPageA: React.FC = () => {
   return (

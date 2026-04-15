@@ -1,4 +1,3 @@
-import Image from "next/image";
 import LandingPage from "@/components/LandingPageAnmol";
 import FeaturePage from "@/components/FeaturesAnmol";
 import Assessments from "@/components/Assessments";

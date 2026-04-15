@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { motion, useInView } from "framer-motion";
 import { Filter, Download, Search } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import LabStep from "@/components/labs/LabStep";
-import { AcceptanceCriteria, TopicHierarchy, DEFAULT_HIERARCHY } from "@/data";
+import { AcceptanceCriteria, DEFAULT_HIERARCHY } from "@/data";
 import { filterLabs, getPersonas, getTopics, getAreas, getProblems } from "@/lib/lab-utils";
 import SelectFilter from "@/components/labs/SelectFilter";
 import { getPersonaIntro } from "@/data";

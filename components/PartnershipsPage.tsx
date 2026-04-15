@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 
 const Partnership = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
