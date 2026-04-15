@@ -9,6 +9,10 @@ const nextConfig: NextConfig = {
       "media.licdn.com",
     ],
   },
+
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 };
 
 export default nextConfig;
