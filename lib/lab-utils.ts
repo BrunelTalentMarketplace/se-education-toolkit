@@ -1,9 +1,8 @@
-import { Lab, LabCategory, CaseStudy } from "@/data";
-
+import { Lab, LabCategory, Problem, PERSONAS, TopicHierarchy, DEFAULT_HIERARCHY } from "@/data";
 import { LABS } from "@/data";
 
 export const getAreas = (): string[] => {
-  return [...new Set(LABS.map((lab: LabCategory) => lab.area))];
+  return [...new Set(LABS.map((lab: LabCategory) => lab.area.toLowerCase()))];
 };
 
 export const formatTopicForDisplay = (topic: string): string => {
@@ -25,20 +24,17 @@ export const getTopics = (area: string): string[] => {
 };
 
 export const getPersonas = (): string[] => {
-  return [...new Set(LABS.map((lab: LabCategory) => lab.persona))];
+  return PERSONAS.map((p) => p.id);
 };
 
-export const getCaseStudies = (area: string, topic: string): CaseStudy[] => {
+export const getProblems = (area: string, topic: string): Problem[] => {
   if (!area || !topic) return [];
-
   const formattedTopic = topic.toLowerCase().replace(/ /g, "_");
-
-  const matchingCategory = LABS.find(
+  const match = LABS.find(
     (lab: LabCategory) =>
       lab.area === area.toLowerCase() && lab.topic === formattedTopic
   );
-
-  return matchingCategory ? matchingCategory.caseStudies : [];
+  return match ? match.problems : [];
 };
 
 export const formatTopicForQuery = (topic: string): string => {
@@ -48,28 +44,21 @@ export const formatTopicForQuery = (topic: string): string => {
 export const filterLabs = (
   area: string,
   topic: string,
-  persona: string,
-  caseStudyId: string
-): { labs: Lab[]; selectedCaseStudy: CaseStudy | null } => {
+  problemId: string
+): { labs: Lab[]; selectedProblem: Problem | null; hierarchy: TopicHierarchy } => {
   const formattedTopic = formatTopicForQuery(topic);
 
-  // Find the matching category
   const matchingCategory = LABS.find(
     (lab: LabCategory) =>
-      lab.area === area.toLowerCase() &&
-      lab.topic === formattedTopic &&
-      lab.persona === persona.toLowerCase()
+      lab.area === area.toLowerCase() && lab.topic === formattedTopic
   );
 
-  if (!matchingCategory) return { labs: [], selectedCaseStudy: null };
+  if (!matchingCategory) return { labs: [], selectedProblem: null, hierarchy: DEFAULT_HIERARCHY };
 
-  // Find the selected case study
-  const selectedCaseStudy =
-    matchingCategory.caseStudies.find((study) => study.id === caseStudyId) ||
-    null;
+  const selectedProblem =
+    matchingCategory.problems.find((p) => p.id === problemId) ?? null;
 
-  // Clone the labs to avoid modifying the original data
   const labs = JSON.parse(JSON.stringify(matchingCategory.labs)) as Lab[];
 
-  return { labs, selectedCaseStudy };
+  return { labs, selectedProblem, hierarchy: matchingCategory.hierarchy };
 };

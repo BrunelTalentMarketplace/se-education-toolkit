@@ -1,13 +1,20 @@
-import { Copy, Clock } from "lucide-react";
-import { Step } from "@/data/index";
-import { CaseStudy } from "@/data";
+import { Copy, Clock, Check } from "lucide-react";
+import { useState } from "react";
+import { Step, TopicHierarchy, DEFAULT_HIERARCHY } from "@/data/index";
+import { Problem, UserStoryExample, AcceptanceCriteria } from "@/data";
 
 interface LabStepProps {
   step: Step;
   index: number;
   copyToClipboard: (text: string) => void;
-  caseStudy?: CaseStudy | null;
+  caseStudy?: {
+    problem: Problem;
+    userStory: UserStoryExample | null;
+    acceptanceCriteria: AcceptanceCriteria[];
+  } | null;
   isSecondStep?: boolean;
+  hierarchy?: TopicHierarchy;
+  personaIntro?: string;
 }
 
 const LabStep: React.FC<LabStepProps> = ({
@@ -16,15 +23,33 @@ const LabStep: React.FC<LabStepProps> = ({
   copyToClipboard,
   caseStudy,
   isSecondStep,
+  hierarchy,
+  personaIntro,
 }) => {
-  // Determine prompt source
+  const resolvedHierarchy = hierarchy ?? DEFAULT_HIERARCHY;
+  const showUserStory = resolvedHierarchy.levels.includes("userStory");
+  const showAC = resolvedHierarchy.levels.includes("acceptanceCriteria");
+  const userStoryLabel = resolvedHierarchy.labels.userStory ?? "User Story";
+  const acLabel = resolvedHierarchy.labels.acceptanceCriteria ?? "Acceptance Criteria";
+  const [copied, setCopied] = useState(false);
+  const [copiedSummary, setCopiedSummary] = useState(false);
+
+  const handleCopy = (text: string) => {
+    copyToClipboard(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleCopySummary = (text: string) => {
+    copyToClipboard(text);
+    setCopiedSummary(true);
+    setTimeout(() => setCopiedSummary(false), 2000);
+  };
+
   const getPrompt = () => {
-    // If this is the second step and we have a case study, use the case study prompt
-    if (isSecondStep && caseStudy) {
-      return caseStudy.prompt;
-    }
-    // Otherwise use the step prompt if it exists
-    return step.prompt;
+    return step.prompt
+      ?.replace("{{PERSONA_INTRO}}", personaIntro ?? "")
+      ?.replace("{{CASE_STUDY_DATA}}", "") ?? null;
   };
 
   const prompt = getPrompt();
@@ -91,17 +116,25 @@ const LabStep: React.FC<LabStepProps> = ({
         <div className="mb-3 sm:mb-4">
           <div className="flex justify-between items-center mb-1 sm:mb-2">
             <h4 className="font-medium text-gray-700 text-sm sm:text-base">
-              {isSecondStep && caseStudy
-                ? `${caseStudy.name} Prompt`
-                : "Prompt"}
+              {isSecondStep && caseStudy ? `${userStoryLabel} Teacher Prompt` : "Prompt"}
             </h4>
             <button
-              onClick={() => copyToClipboard(prompt)}
-              className="flex items-center gap-1 text-blue-500 text-xs sm:text-sm hover:text-blue-600 transition-colors"
+              onClick={() => handleCopy(prompt)}
+              className="flex items-center gap-1 text-xs sm:text-sm transition-colors text-blue-500 hover:text-blue-600"
             >
-              <Copy size={12} className="sm:hidden" />
-              <Copy size={14} className="hidden sm:block" />
-              Copy
+              {copied ? (
+                <>
+                  <Check size={12} className="sm:hidden" />
+                  <Check size={14} className="hidden sm:block" />
+                  Copied!
+                </>
+              ) : (
+                <>
+                  <Copy size={12} className="sm:hidden" />
+                  <Copy size={14} className="hidden sm:block" />
+                  Copy
+                </>
+              )}
             </button>
           </div>
           <div className="bg-gray-50 p-2 sm:p-3 rounded-md text-xs sm:text-sm text-gray-700 whitespace-pre-line overflow-auto max-h-48 sm:max-h-64">
@@ -110,12 +143,104 @@ const LabStep: React.FC<LabStepProps> = ({
         </div>
       )}
 
-      {isSecondStep && caseStudy && (
-        <div className="mt-3 sm:mt-4 p-2 sm:p-3 bg-blue-50 rounded-md">
-          <p className="text-xs sm:text-sm text-blue-800">
-            <span className="font-medium">Case Study: </span>
-            {caseStudy.description}
+      {isSecondStep && !caseStudy && (
+        <div className="mt-3 sm:mt-4 bg-amber-50 border border-amber-200 rounded-md px-3 sm:px-4 py-3">
+          <p className="text-xs sm:text-sm text-amber-800">
+            {resolvedHierarchy.levels.length === 1
+              ? "Select a problem above to unlock this step."
+              : resolvedHierarchy.levels.length === 2
+              ? `Select a problem and ${userStoryLabel.toLowerCase()} above to unlock this step.`
+              : `Select a problem, ${userStoryLabel.toLowerCase()}, and ${acLabel.toLowerCase()} above to unlock this step.`}
           </p>
+        </div>
+      )}
+
+      {isSecondStep && caseStudy && (
+        <div className="mt-3 sm:mt-4 bg-blue-50 rounded-md overflow-hidden">
+          <div className="flex justify-between items-center px-2 sm:px-3 pt-2 sm:pt-3 mb-2">
+            <h4 className="font-medium text-gray-700 text-sm sm:text-base">Selected Context</h4>
+            <button
+              onClick={() => {
+                const { problem, userStory, acceptanceCriteria } = caseStudy;
+                const lines = [
+                  `Problem Statement: ${problem.statement}`,
+                  ...(problem.description ? [`Description: ${problem.description}`] : []),
+                  ...(problem.context ? [`Context: ${problem.context}`] : []),
+                  ...(problem.personas.length > 0
+                    ? [`Personas:\n${problem.personas.map((p, i) => `${i + 1}. ${p.name} (${p.role}): ${p.description}`).join("\n")}`]
+                    : []),
+                  ...(userStory && showUserStory ? [`Selected ${userStoryLabel}: ${userStory.statement}`] : []),
+                  ...(acceptanceCriteria.length > 0 && showAC
+                    ? [`Selected ${acLabel}:\n${acceptanceCriteria.map((ac, i) => `${i + 1}. ${ac.criteria}`).join("\n")}`]
+                    : []),
+                ];
+                handleCopySummary(lines.join("\n\n"));
+              }}
+              className="flex items-center gap-1 text-xs sm:text-sm transition-colors text-blue-500 hover:text-blue-600"
+            >
+              {copiedSummary ? (
+                <>
+                  <Check size={12} className="sm:hidden" />
+                  <Check size={14} className="hidden sm:block" />
+                  Copied!
+                </>
+              ) : (
+                <>
+                  <Copy size={12} className="sm:hidden" />
+                  <Copy size={14} className="hidden sm:block" />
+                  Copy
+                </>
+              )}
+            </button>
+          </div>
+          <div className="px-2 sm:px-3 pb-2 sm:pb-3 space-y-2">
+            <div>
+              <p className="text-xs sm:text-sm text-blue-800 font-medium mb-0.5">Problem Statement:</p>
+              <p className="text-xs sm:text-sm text-blue-800">{caseStudy.problem.statement}</p>
+            </div>
+            {caseStudy.problem.description && (
+              <div>
+                <p className="text-xs sm:text-sm text-blue-800 font-medium mb-0.5">Description:</p>
+                <p className="text-xs sm:text-sm text-blue-800">{caseStudy.problem.description}</p>
+              </div>
+            )}
+            {caseStudy.problem.context && (
+              <div>
+                <p className="text-xs sm:text-sm text-blue-800 font-medium mb-0.5">Context:</p>
+                <p className="text-xs sm:text-sm text-blue-800">{caseStudy.problem.context}</p>
+              </div>
+            )}
+            {caseStudy.problem.personas.length > 0 && (
+              <div>
+                <p className="text-xs sm:text-sm text-blue-800 font-medium mb-0.5">Personas:</p>
+                <ul className="space-y-1">
+                  {caseStudy.problem.personas.map((persona, i) => (
+                    <li key={i} className="text-xs sm:text-sm text-blue-800">
+                      <span className="font-medium">{persona.name}</span> ({persona.role}): {persona.description}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {caseStudy.userStory && showUserStory && (
+              <div>
+                <p className="text-xs sm:text-sm text-blue-800 font-medium mb-0.5">
+                  Selected {userStoryLabel}:
+                </p>
+                <p className="text-xs sm:text-sm text-blue-800">{caseStudy.userStory.statement}</p>
+              </div>
+            )}
+            {caseStudy.acceptanceCriteria.length > 0 && showAC && (
+              <div>
+                <p className="text-xs sm:text-sm text-blue-800 font-medium mb-0.5">Selected {acLabel}:</p>
+                <ul className="space-y-0.5">
+                  {caseStudy.acceptanceCriteria.map((ac, i) => (
+                    <li key={i} className="text-xs sm:text-sm text-blue-800">{i + 1}. {ac.criteria}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
