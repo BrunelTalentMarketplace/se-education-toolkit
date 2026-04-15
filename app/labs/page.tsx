@@ -140,7 +140,10 @@ const LabsPage = () => {
   }, [selectedProblem, hierarchySelection, topicHierarchy]);
 
   const selectedLab = filteredLabs.length > 0 ? filteredLabs[0] : null;
-  const personaIntro = selectedArea ? getPersonaIntro(selectedArea, defaultPersona) : null;
+  const personaIntro = useMemo(
+    () => (selectedArea ? getPersonaIntro(selectedArea, defaultPersona) : null),
+    [selectedArea, defaultPersona]
+  );
 
   const updateFilters = (updates: Record<string, string>) => {
     setFilters((prev) => {
