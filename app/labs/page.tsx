@@ -248,68 +248,7 @@ const LabsPage = () => {
           </motion.div>
         )}
 
-        {selectedLab && !personaIntro && (
-          <motion.div
-            className="bg-white/30 backdrop-blur-sm border border-white/20 rounded-xl p-6 sm:p-8 text-center"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2">
-              No games available for this persona yet
-            </h3>
-            <p className="text-sm sm:text-base text-gray-600">
-              Try Tutor or Student instead, or stay tuned for more content.
-            </p>
-          </motion.div>
-        )}
-
-        {selectedLab && personaIntro ? (
-          <motion.div
-            className="bg-white/30 backdrop-blur-sm border border-white/20 rounded-xl p-4 sm:p-5 md:p-6 shadow-sm"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start md:items-center mb-4 sm:mb-6 gap-3 md:gap-4">
-              <div>
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-1 sm:mb-2">
-                  {selectedLab.title}
-                </h2>
-                {selectedLab.description && (
-                  <p className="text-sm sm:text-base text-gray-600">
-                    {selectedLab.description}
-                  </p>
-                )}
-              </div>
-              {selectedLab && (
-                <button
-                  onClick={handleDownload}
-                  className="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-3 sm:px-4 rounded-lg transition-colors min-w-[140px] sm:min-w-[160px] md:min-w-[180px] text-sm sm:text-base whitespace-nowrap"
-                >
-                  <Download size={16} className="hidden sm:inline" />
-                  <Download size={14} className="sm:hidden" />
-                  Download Lab Sheet
-                </button>
-              )}
-            </div>
-
-            <div className="space-y-6 sm:space-y-8">
-              {selectedLab.steps.map((step, i) => (
-                <LabStep
-                  key={i}
-                  step={step}
-                  index={i}
-                  copyToClipboard={copyToClipboard}
-                  caseStudy={step.type === "interaction" ? selectedHierarchicalData : null}
-                  isSecondStep={step.type === "interaction"}
-                  hierarchy={topicHierarchy}
-                  personaIntro={personaIntro}
-                />
-              ))}
-            </div>
-          </motion.div>
-        ) : !selectedLab ? (
+        {!selectedLab && (
           <motion.div
             className="bg-white/30 backdrop-blur-sm border border-white/20 rounded-xl p-6 sm:p-8 text-center"
             initial={{ opacity: 0, y: 20 }}
@@ -330,7 +269,52 @@ const LabsPage = () => {
               lab. You can customize the persona and case study afterwards.
             </p>
           </motion.div>
-        ) : null}
+        )}
+
+        {selectedLab && personaIntro && (
+          <motion.div
+            className="bg-white/30 backdrop-blur-sm border border-white/20 rounded-xl p-4 sm:p-5 md:p-6 shadow-sm"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start md:items-center mb-4 sm:mb-6 gap-3 md:gap-4">
+              <div>
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-1 sm:mb-2">
+                  {selectedLab.title}
+                </h2>
+                {selectedLab.description && (
+                  <p className="text-sm sm:text-base text-gray-600">
+                    {selectedLab.description}
+                  </p>
+                )}
+              </div>
+              <button
+                onClick={handleDownload}
+                className="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-3 sm:px-4 rounded-lg transition-colors min-w-[140px] sm:min-w-[160px] md:min-w-[180px] text-sm sm:text-base whitespace-nowrap"
+              >
+                <Download size={16} className="hidden sm:inline" />
+                <Download size={14} className="sm:hidden" />
+                Download Lab Sheet
+              </button>
+            </div>
+
+            <div className="space-y-6 sm:space-y-8">
+              {selectedLab.steps.map((step, i) => (
+                <LabStep
+                  key={i}
+                  step={step}
+                  index={i}
+                  copyToClipboard={copyToClipboard}
+                  caseStudy={step.type === "interaction" ? selectedHierarchicalData : null}
+                  isSecondStep={step.type === "interaction"}
+                  hierarchy={topicHierarchy}
+                  personaIntro={personaIntro}
+                />
+              ))}
+            </div>
+          </motion.div>
+        )}
       </div>
     </main>
   );
