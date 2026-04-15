@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef } from "react";
+import { useRef } from "react";
 import { ArrowRight } from "lucide-react";
 import { PersonaType, PERSONAS } from "@/constants";
 import Image from "next/image";
