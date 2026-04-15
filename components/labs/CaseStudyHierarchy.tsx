@@ -259,15 +259,17 @@ const CaseStudyHierarchy: React.FC<CaseStudyHierarchyProps> = ({
                 {selectedProblem.context && (
                   <p className="text-xs text-gray-500 mb-2">Context: {selectedProblem.context}</p>
                 )}
-                <div className="border-t border-blue-200 pt-2 mt-2">
-                  <p className="text-xs font-medium text-gray-600 mb-1">Personas:</p>
-                  {selectedProblem.personas.map((persona) => (
-                    <div key={persona.name} className="text-xs text-gray-600 mb-1">
-                      <span className="font-medium">{persona.name}</span> ({persona.role}):{" "}
-                      {persona.description}
-                    </div>
-                  ))}
-                </div>
+                {selectedProblem.personas.length > 0 && (
+                  <div className="border-t border-blue-200 pt-2 mt-2">
+                    <p className="text-xs font-medium text-gray-600 mb-1">Personas:</p>
+                    {selectedProblem.personas.map((persona) => (
+                      <div key={persona.name} className="text-xs text-gray-600 mb-1">
+                        <span className="font-medium">{persona.name}</span> ({persona.role}):{" "}
+                        {persona.description}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           )}
