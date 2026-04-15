@@ -243,18 +243,11 @@ const LabsPage = () => {
         : "";
 
       sectionsHTML += `<div class="section">
-        <h2>${escapeHtml(step.title)} <span class="timer">${step.time} minutes</span></h2>
+        <h2>${escapeHtml(step.title)}</h2>
         ${setupHTML}${promptHTML}${caseStudyHTML}${guidelinesHTML}
       </div>`;
     });
 
-    sectionsHTML += `<div class="section">
-      <h2>Documentation <span class="timer">5 minutes</span></h2>
-      <ol>
-        <li>Export your conversation (or copy and paste your interactions into a text document)</li>
-        <li>Save as PDF/text</li>
-      </ol>
-    </div>`;
 
     const html = `<!DOCTYPE html>
 <html>
