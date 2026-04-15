@@ -12,7 +12,6 @@ interface CaseStudyHierarchyProps {
     userStoryId: string;
     acceptanceCriteriaIds: string[];
   }) => void;
-  onProblemChange: (problemId: string) => void;
   initialSelection?: {
     problemId: string;
     userStoryId: string;
@@ -24,7 +23,6 @@ interface CaseStudyHierarchyProps {
 const CaseStudyHierarchy: React.FC<CaseStudyHierarchyProps> = ({
   problems,
   onSelectionChange,
-  onProblemChange,
   initialSelection,
   hierarchy,
 }) => {
@@ -73,7 +71,6 @@ const CaseStudyHierarchy: React.FC<CaseStudyHierarchyProps> = ({
     setSelectedProblemId(problemId);
     setSelectedUserStoryId("");
     setSelectedAcceptanceCriteriaIds([]);
-    onProblemChange(problemId);
     onSelectionChange({ problemId, userStoryId: "", acceptanceCriteriaIds: [] });
   };
 

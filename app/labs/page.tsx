@@ -307,18 +307,6 @@ const LabsPage = () => {
     document.body.removeChild(textarea);
   };
 
-  const handleHierarchySelectionChange = (selection: {
-    problemId: string;
-    userStoryId: string;
-    acceptanceCriteriaIds: string[];
-  }) => {
-    setHierarchySelection(selection);
-  };
-
-  const handleProblemChange = (problemId: string) => {
-    setHierarchySelection({ problemId, userStoryId: "", acceptanceCriteriaIds: [] });
-  };
-
   return (
     <main className="min-h-screen flex flex-col items-center relative overflow-hidden px-4 py-10 sm:py-12 md:py-16">
       <div className="absolute inset-0 overflow-hidden -z-10">
@@ -383,8 +371,7 @@ const LabsPage = () => {
           >
             <CaseStudyHierarchy
               problems={availableProblems}
-              onSelectionChange={handleHierarchySelectionChange}
-              onProblemChange={handleProblemChange}
+              onSelectionChange={setHierarchySelection}
               initialSelection={hierarchySelection}
               hierarchy={topicHierarchy}
             />
