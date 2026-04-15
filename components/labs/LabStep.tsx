@@ -19,7 +19,6 @@ interface LabStepProps {
 
 const LabStep: React.FC<LabStepProps> = ({
   step,
-  index,
   copyToClipboard,
   caseStudy,
   isSecondStep,

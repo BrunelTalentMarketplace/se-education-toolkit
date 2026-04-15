@@ -2,8 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
-import { FileText, ExternalLink, Calendar } from "lucide-react";
+import { FileText, Calendar } from "lucide-react";
 
 const TalksPage = () => {
   return (

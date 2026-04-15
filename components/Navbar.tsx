@@ -1,11 +1,9 @@
 "use client";
 
-import { NavlinkType, NAVLINKS } from "@/constants";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import Assessments from "./Assessments";
 import { Menu, X } from "lucide-react";
 
 const Navbar = () => {
