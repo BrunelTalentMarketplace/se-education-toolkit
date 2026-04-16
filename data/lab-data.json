@@ -3,7 +3,7 @@
     {
       "name": "requirements engineering",
       "personaIntros": {
-        "tutor": "I want to act as a Requirements Engineering teacher",
+        "tutor": "I want you to act as a Requirements Engineering teacher",
         "student": "I want you to act as a fellow student taking the Requirements Engineering course",
         "professional": "I want you to act as an experienced software requirements engineer"
       },
@@ -47,8 +47,8 @@
         {
           "name": "use_cases",
           "hierarchy": {
-            "levels": ["problem", "userStory"],
-            "labels": { "userStory": "Use Case Scenario" }
+            "levels": ["problem"],
+            "labels": {}
           },
           "problemIds": ["reset-password-problem"],
           "games": [
@@ -82,7 +82,7 @@
     {
       "name": "software testing",
       "personaIntros": {
-        "tutor": "I want to act as a software testing teacher",
+        "tutor": "I want you to act as a software testing teacher",
         "student": "I want you to act as a fellow student learning software testing",
         "professional": "I want you to act as an experienced software engineer with a strong background in TDD and software quality"
       },
@@ -173,7 +173,7 @@
     {
       "name": "software design",
       "personaIntros": {
-        "tutor": "I want to act as a software design teacher",
+        "tutor": "I want you to act as a software design teacher",
         "student": "I want you to act as a fellow student learning object-oriented design",
         "professional": "I want you to act as an experienced software architect with deep knowledge of OO design principles"
       },
@@ -309,7 +309,7 @@
     {
       "name": "coding maintenance",
       "personaIntros": {
-        "tutor": "I want to act as a software engineering teacher",
+        "tutor": "I want you to act as a software engineering teacher",
         "student": "I want you to act as a fellow student learning software engineering best practices",
         "professional": "I want you to act as a senior software engineer"
       },
@@ -376,40 +376,11 @@
     {
       "id": "reset-password-problem",
       "name": "Reset Password",
-      "statement": "Users need a secure way to reset their forgotten passwords.",
-      "description": "A system that allows users to safely reset their account passwords through a secure link and verification process.",
-      "personas": [
-        {
-          "name": "User",
-          "role": "Account Owner",
-          "description": "A user who has forgotten their password and needs to regain access."
-        },
-        {
-          "name": "System",
-          "role": "Password Manager",
-          "description": "The authentication system that validates and updates passwords."
-        }
-      ],
-      "userStories": [
-        {
-          "id": "reset-password-us-1",
-          "statement": "As a user, I want to reset my forgotten password so that I can regain access to my account",
-          "acceptanceCriteria": [
-            {
-              "id": "reset-password-ac-1-1",
-              "criteria": "Given that the user is on the login page, when the user clicks the reset password link, then the system sends a password reset link to their email"
-            },
-            {
-              "id": "reset-password-ac-1-2",
-              "criteria": "Given that the user received the reset link, when the user enters a new password, then the system validates and updates the account password"
-            },
-            {
-              "id": "reset-password-ac-1-3",
-              "criteria": "Given that the reset link has expired, when the user tries to use it, then the system displays an error message and prompts to request a new link"
-            }
-          ]
-        }
-      ]
+      "statement": "You are given the main flow of a use case for resetting a forgotten password. \n Identify the flaws and inaccuracies in the steps.",
+      "description": "Primary Actor: Registered User\n\nCurrent Main Flow (FLAWED - find the issues!):\n1. User clicks reset password\n2. System sends them the link\n3. User enters new password\n4. System updates the account",
+      "note": "This exercise focuses on analyzing the MAIN FLOW of a use case. A complete use case would also include preconditions, postconditions, and alternative flows.",
+      "personas": [],
+      "userStories": []
     },
     {
       "id": "test-palindrome-happy-path",
