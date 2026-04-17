@@ -50,12 +50,12 @@
             "levels": ["problem"],
             "labels": {}
           },
-          "problemIds": ["reset-password-problem"],
+          "problemIds": ["reset-password-problem", "user-login-problem", "book-meeting-room-problem"],
           "games": [
             {
               "id": "use-case-tutor",
               "title": "Use Case Analysis Practice",
-              "description": "Learn to analyze and improve use case flows",
+              "description": "Learn to analyze and improve use case flows by identifying inaccuracies. ",
               "steps": [
                 {
                   "type": "setup",
@@ -378,6 +378,24 @@
       "name": "Reset Password",
       "statement": "You are given the main flow of a use case for resetting a forgotten password. \n Identify the flaws and inaccuracies in the steps.",
       "description": "Primary Actor: Registered User\n\nCurrent Main Flow (FLAWED - find the issues!):\n1. User clicks reset password\n2. System sends them the link\n3. User enters new password\n4. System updates the account",
+      "note": "This exercise focuses on analyzing the MAIN FLOW of a use case. A complete use case would also include preconditions, postconditions, and alternative flows.",
+      "personas": [],
+      "userStories": []
+    },
+    {
+      "id": "user-login-problem",
+      "name": "User Login",
+      "statement": "You are given the main flow of a use case for logging in to an account. Identify the flaws and inaccuracies in the steps.",
+      "description": "Primary Actor: Registered User\n\nCurrent Main Flow (FLAWED - find the issues!):\n1. User enters their username\n2. User submits the form\n3. System grants access to the dashboard",
+      "note": "This exercise focuses on analyzing the MAIN FLOW of a use case. A complete use case would also include preconditions, postconditions, and alternative flows.",
+      "personas": [],
+      "userStories": []
+    },
+    {
+      "id": "book-meeting-room-problem",
+      "name": "Book a Meeting Room",
+      "statement": "You are given the main flow of a use case for booking a meeting room. Identify the flaws and inaccuracies in the steps.",
+      "description": "Primary Actor: Employee\n\nCurrent Main Flow (FLAWED - find the issues!):\n1. Employee selects a room\n2. Employee chooses a date\n3. System books the room\n4. Employee receives a confirmation",
       "note": "This exercise focuses on analyzing the MAIN FLOW of a use case. A complete use case would also include preconditions, postconditions, and alternative flows.",
       "personas": [],
       "userStories": []
