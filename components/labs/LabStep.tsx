@@ -165,6 +165,7 @@ const LabStep: React.FC<LabStepProps> = ({
                   `Problem Statement: ${problem.statement}`,
                   ...(problem.description ? [`Description: ${problem.description}`] : []),
                   ...(problem.context ? [`Context: ${problem.context}`] : []),
+                  ...(problem.note ? [`Note: ${problem.note}`] : []),
                   ...(problem.personas.length > 0
                     ? [`Personas:\n${problem.personas.map((p, i) => `${i + 1}. ${p.name} (${p.role}): ${p.description}`).join("\n")}`]
                     : []),
@@ -195,18 +196,24 @@ const LabStep: React.FC<LabStepProps> = ({
           <div className="px-2 sm:px-3 pb-2 sm:pb-3 space-y-2">
             <div>
               <p className="text-xs sm:text-sm text-blue-800 font-medium mb-0.5">Problem Statement:</p>
-              <p className="text-xs sm:text-sm text-blue-800">{caseStudy.problem.statement}</p>
+              <p className="text-xs sm:text-sm text-blue-800 whitespace-pre-line">{caseStudy.problem.statement}</p>
             </div>
             {caseStudy.problem.description && (
               <div>
                 <p className="text-xs sm:text-sm text-blue-800 font-medium mb-0.5">Description:</p>
-                <p className="text-xs sm:text-sm text-blue-800">{caseStudy.problem.description}</p>
+                <p className="text-xs sm:text-sm text-blue-800 whitespace-pre-line">{caseStudy.problem.description}</p>
               </div>
             )}
             {caseStudy.problem.context && (
               <div>
                 <p className="text-xs sm:text-sm text-blue-800 font-medium mb-0.5">Context:</p>
                 <p className="text-xs sm:text-sm text-blue-800">{caseStudy.problem.context}</p>
+              </div>
+            )}
+            {caseStudy.problem.note && (
+              <div className="bg-amber-50 border border-amber-200 rounded px-2 py-1.5">
+                <p className="text-xs sm:text-sm text-amber-800 font-medium mb-0.5">Note:</p>
+                <p className="text-xs sm:text-sm text-amber-800">{caseStudy.problem.note}</p>
               </div>
             )}
             {caseStudy.problem.personas.length > 0 && (

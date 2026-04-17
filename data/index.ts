@@ -49,6 +49,7 @@ export type Problem = {
   statement: string;
   description: string;
   context?: string;
+  note?: string;
   personas: Persona[];
   userStories: UserStoryExample[];
 };
